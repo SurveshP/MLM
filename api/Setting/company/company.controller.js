@@ -23,11 +23,17 @@ const { validateCompany, validateUpdate } = require('./company.validator');
 //     res.status(500).json({ error: 'Error inserting data into the database' });
 //   }
 // };
+function generateSponsorId(count) {
+  // Assuming count is a number like 1, 2, 3, ...
+  const formattedCount = count.toString().padStart(2, '0');
+  return `RAL-${formattedCount}`;
+}
+
 exports.insertCompany = async (req, res, next) => {
   try {
     // Validation
     const { error, value } = validateCompany(req.body);
-    
+
     // Check Error in Validation
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
@@ -38,9 +44,14 @@ exports.insertCompany = async (req, res, next) => {
     if (existingCompanyName) {
       return res.status(400).json({ error: 'Company with the given name already exists' });
     }
+
+    // Generate sponsorId
+    const count = await CompanyModel.countDocuments() + 1; // Get the count of existing documents
+    const sponsorId = generateSponsorId(count);
     
-    // Insert company
-    let companyModel = new CompanyModel(value);
+    // Insert company with sponsorId
+    const companyData = { ...value, sponserId: sponsorId };
+    let companyModel = new CompanyModel(companyData);
     let savedCompany = await companyModel.save();
 
     // Send Response
@@ -54,26 +65,28 @@ exports.insertCompany = async (req, res, next) => {
 // Display List
 exports.ListCompanys = async (req, res, next) => {
   try {
-    let company = await CompanyModel.find({ del_status: "Live" });
+    let company = await CompanyModel.find({ disabled: false });
     if (!company || company.length === 0) {
       console.log('companyr not found');
       return res.status(404).json({ message: 'company not found' });
     }
-    res.status(200).json({ company });
+    res.status(200).json({ message: "success", company });
   } catch (error) {
-    res.status(500).json({ error });
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
   }
 };
 
 // Display Single company
 exports.showCompany = async (req, res, next) => {
   try {
-    let id = req.params.id;
-    let company = await CompanyModel.findOne({ _id: id });
+    let sponserId = req.params.sponserId; // Assuming the parameter is sponserId
+    let company = await CompanyModel.findOne({ sponserId: sponserId });
 
     if (!company) {
-      console.log('company not found');
-      return res.status(404).json({ message: 'company not found' });
+      console.log('Company not found');
+      return res.status(404).json({ message: 'Company not found' });
     }
 
     res.status(200).json({ company });
@@ -82,10 +95,11 @@ exports.showCompany = async (req, res, next) => {
   }
 };
 
+
 // Update company
 exports.updateCompany = async (req, res, next) => {
   try {
-    let id = req.params.id;
+    let sponserId = req.params.sponserId;
 
     // Validation
     let { error, value } = validateUpdate(req.body);
@@ -95,43 +109,44 @@ exports.updateCompany = async (req, res, next) => {
       return res.status(400).send(error.details[0].message);
     }
 
-    let company = await CompanyModel.findByIdAndUpdate({ _id: id }, value, {
-      new: true
+    // Find and update company based on sponserId
+    let company = await CompanyModel.findOneAndUpdate({ sponserId: sponserId }, value, {
+      new: true,
+      runValidators: true // Ensure validation is applied on update
     });
 
     if (!company) {
-      console.log('company not found');
-      return res.status(404).json({ message: 'company not found' });
+      console.log('Company not found');
+      return res.status(404).json({ message: 'Company not found' });
     }
 
     res.status(200).json({ company });
   } catch (error) {
-
-    console.log(error);
-    // Send Error Response
-    res.status(500).json('Error updating company');
+    console.error(error);
+    res.status(500).json({ error: 'Error updating company' });
   }
 };
 
 // // Delete company
 exports.deleteCompany = async (req, res, next) => {
   try {
-    let id = req.params.id;
+    let sponserId = req.params.sponserId;
 
-    const updatedCompany = await CompanyModel.findByIdAndUpdate(
-      id,
-      { del_status: "Deleted" },
+    const updatedCompany = await CompanyModel.findOneAndUpdate(
+      { sponserId: sponserId },
+      { disabled: true },
       { new: true }
     );
 
     if (!updatedCompany) {
-      console.log('company not found');
-      return res.status(404).json({ message: 'company not found' });
+      console.log('Company not found');
+      return res.status(404).json({ message: 'Company not found' });
     }
 
-    res.status(200).json({ message: "User deleted successfully" });
+    res.status(200).json({ message: "Company deleted successfully" });
   } catch (error) {
-    // Send Error Response
+    console.error(error);
     res.status(500).json({ message: "Something went wrong", error: error.message });
   }
 };
+
