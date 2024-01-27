@@ -1,4 +1,5 @@
 const CompanyModel = require('./company.model');
+const UserModel = require('../user/user.model');
 const { validateCompany, validateUpdate } = require('./company.validator');
 
 // Insert New company
@@ -33,7 +34,7 @@ exports.insertCompany = async (req, res, next) => {
 // Display List
 exports.ListCompanys = async (req, res, next) => {
   try {
-    let company = await CompanyModel.find({ disabled: false });
+    let company = await CompanyModel.find({ disabled: false }).populate('userSponser_id');
     if (!company || company.length === 0) {
       console.log('companyr not found');
       return res.status(404).json({ message: 'company not found' });
@@ -49,12 +50,8 @@ exports.ListCompanys = async (req, res, next) => {
 // Display Single company
 exports.showCompany = async (req, res, next) => {
   try {
-    let sponserId = req.params.sponserId; // Assuming the parameter is sponserId
-    let company = await CompanyModel.findOne({ sponserId: sponserId })
-    .populate({
-      path: "users",
-      match:{disabled: false}
-    });
+    let companyId = req.params.id; // Assuming the parameter is companyId
+    let company = await CompanyModel.findById(companyId).populate('userSponser_id')
 
     if (!company) {
       console.log('Company not found');
@@ -63,15 +60,19 @@ exports.showCompany = async (req, res, next) => {
 
     res.status(200).json({ company });
   } catch (error) {
-    res.status(500).json({ error });
+    console.error(error);
+    res.status(500).json({ error: 'Error retrieving company' });
   }
 };
+
+
+
 
 
 // Update company
 exports.updateCompany = async (req, res, next) => {
   try {
-    let sponserId = req.params.sponserId;
+    let companyId = req.params.id;
 
     // Validation
     let { error, value } = validateUpdate(req.body);
@@ -82,7 +83,7 @@ exports.updateCompany = async (req, res, next) => {
     }
 
     // Find and update company based on sponserId
-    let company = await CompanyModel.findOneAndUpdate({ sponserId: sponserId }, value, {
+    let company = await CompanyModel.findByIdAndUpdate({ _id: companyId }, value, {
       new: true,
       runValidators: true // Ensure validation is applied on update
     });
@@ -102,10 +103,10 @@ exports.updateCompany = async (req, res, next) => {
 // // Delete company
 exports.deleteCompany = async (req, res, next) => {
   try {
-    let sponserId = req.params.sponserId;
+    let companyId = req.params.id;
 
-    const updatedCompany = await CompanyModel.findOneAndUpdate(
-      { sponserId: sponserId },
+    const updatedCompany = await CompanyModel.findByIdAndUpdate(
+      { _id: companyId },
       { disabled: true },
       { new: true }
     );

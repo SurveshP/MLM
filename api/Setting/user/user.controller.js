@@ -61,10 +61,9 @@ exports.userInsert = async (req, res, next) => {
   }
 };
 
-
 exports.showUsers = async (req, res) => {
   try {
-    const user = await UserModel.find({ del_status: "Live" });
+    const user = await UserModel.find({ disabled: "false" });
     console.log(user);
 
     if (!user || user.length === 0) {
@@ -81,12 +80,14 @@ exports.showUsers = async (req, res) => {
 // Display Single User
 exports.showUser = async (req, res, next) => {
   try {
-    const id = req.params.id;
-    const user = await UserModel.findOne({ _id: id, });
+    const sponserId = req.params.sponserId; // Corrected variable name
+    console.log(sponserId);
+    const user = await UserModel.findOne({ sponserId: sponserId }); // Corrected field name
+    console.log(user);
 
     if (!user) {
-      console.log("user not found");
-      return res.status(404).json({ message: "User not found", });
+      console.log("User not found");
+      return res.status(404).json({ message: "User not found" });
     }
 
     res.status(200).json({ user });
@@ -127,7 +128,7 @@ exports.showUser = async (req, res, next) => {
 // };
 exports.updateUser = async (req, res, next) => {
   try {
-    const id = req.params.id;
+    const sponserId = req.params.sponserId;
 
     // Validation
     const { error, value } = validateUpdate(req.body);
@@ -137,8 +138,8 @@ exports.updateUser = async (req, res, next) => {
     }
     
     // Get the existing user by ID using Mongoose
-    const existingUser = await UserModel.findByIdAndUpdate(
-      { _id: id },
+    const existingUser = await UserModel.findOneAndUpdate(
+      { sponserId: sponserId },
       value,
       { new: true }
     );
@@ -163,10 +164,10 @@ exports.updateUser = async (req, res, next) => {
 // Delete User
 exports.deleteUser = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      id,
-      { del_status: "Deleted" },
+    const sponserId = req.params.sponserId;
+    const updatedUser = await UserModel.findOneAndUpdate(
+      { sponserId: sponserId },
+      { disabled: "true" },
       { new: true }
     );
 

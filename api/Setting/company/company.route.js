@@ -9,12 +9,12 @@ router.post('/', companyController.insertCompany);
 router.get('/', companyController.ListCompanys);
 
 /* show */
-router.get('/:sponserId', companyController.showCompany);
+router.get('/:id', companyController.showCompany);
 
 /* update */
-router.put('/:sponserId', companyController.updateCompany);
+router.put('/:id', companyController.updateCompany);
 
 /* Delete */
-router.delete('/:sponserId', companyController.deleteCompany);
+router.delete('/:id', companyController.deleteCompany);
 
 module.exports = router;

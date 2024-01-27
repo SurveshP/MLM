@@ -9,12 +9,12 @@ router.post('/', userController.userInsert);
 router.get('/', userController.showUsers);
 
 /* show */
-router.get('/:id', userController.showUser);
+router.get('/:sponserId', userController.showUser);
 
 /* update */
-router.put('/:id', userController.updateUser);
+router.put('/:sponserId', userController.updateUser);
 
 /* Delete */
-router.delete('/:id', userController.deleteUser);
+router.delete('/:sponserId', userController.deleteUser);
 
 module.exports = router;
