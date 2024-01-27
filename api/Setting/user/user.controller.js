@@ -4,55 +4,13 @@ const { validateUser, validateUpdate } = require("./user.validator");
 const bcrypt = require('bcrypt');
 
 // Insert New User
-// exports.userInsert = async (req, res, next) => {
-//   try {
-//     // Validation
-//     let { error, value } = validateUser(req.body);
+function generateSponsorId(count) {
+  // Assuming count is a number like 1, 2, 3, ...
+  const formattedCount = count.toString().padStart(2, '0');
+  return `USE-${formattedCount}`;
+}
 
-//     // Check Error in Validation
-//     if (error) {
-//       return res.status(400).send(error.details[0].message);
-//     }
-
-//     // Insert User
-//     let userModel = new UserModel(value);
-//     let savedData = await userModel.save();
-
-//     // Send Response
-//     res.status(200).json({ message: 'Data inserted', data: savedData });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: 'Error inserting data into the database' });
-//   }
-// };
-// exports.userInsert = async (req, res, next) => {
-//   try {
-//     // Validation
-//     let { error, value } = validateUser(req.body);
-
-//     // Check Error in Validation
-//     if (error) {
-//       return res.status(400).send(error.details[0].message);
-//     }
-
-//     // Hash the Password
-//     const saltRounds = 10; // Adjust the number of salt rounds as needed
-//     const hashedPassword = await bcrypt.hash(value.password, saltRounds);
-
-//     // Replace the plain password with the hashed one
-//     value.password = hashedPassword;
-
-//     // Insert User
-//     let userModel = new UserModel(value);
-//     let savedData = await userModel.save();
-
-//     // Send Response
-//     res.status(200).json({ message: 'Data inserted', data: savedData });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: 'Error inserting data into the database' });
-//   }
-// };
+//Display List
 exports.userInsert = async (req, res, next) => {
   try {
     // Validation
@@ -63,10 +21,10 @@ exports.userInsert = async (req, res, next) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    // Check if Email already exists
-    const existingEmail = await UserModel.findOne({ email_address: value.email_address });
-    if (existingEmail) {
-      return res.status(400).json({ error: 'Email with the given name already exists' });
+    // Check if emailAddress already exists
+    const existingUserName = await UserModel.findOne({ emailAddress: value.emailAddress });
+    if (existingUserName) {
+      return res.status(400).json({ error: 'User with the given emailAddress already exists' });
     }
 
     // Hash the Password
@@ -76,14 +34,23 @@ exports.userInsert = async (req, res, next) => {
     // Replace the plain password with the hashed one
     value.password = hashedPassword;
 
-    // Insert User
+    // Generate sponsorId
+    const count = await UserModel.countDocuments() + 1; // Get the count of existing documents
+    const sponsorId = generateSponsorId(count);
+
+    // Insert User with sponsorId
+    value.sponserId = sponsorId;
     let userModel = new UserModel(value);
     let savedUser = await userModel.save();
 
-    // Update company with user_id
+    // Update company with userSponser_id
     const companyId = req.body.company_id; // Assuming you pass company_id in the request body
     if (companyId) {
-      await CompanyModel.findByIdAndUpdate(companyId, { $push: { user_id: savedUser._id } });
+      // Create a filter object using the companyId
+      const filter = { _id: companyId };
+
+      // Push the user's sponsorId into the userSponser_id array of the company
+      await CompanyModel.findOneAndUpdate(filter, { $push: { userSponser_id: savedUser.sponserId } });
     }
 
     // Send Response
@@ -94,7 +61,7 @@ exports.userInsert = async (req, res, next) => {
   }
 };
 
-// Display List
+
 exports.showUsers = async (req, res) => {
   try {
     const user = await UserModel.find({ del_status: "Live" });

@@ -16,17 +16,12 @@ const companySchema = Joi.object({
     'string.base': 'Email Address must be a string.',
     'string.email': 'Email Address must be a valid email.',
   }),
-  type: Joi.string().valid('Admin', 'User').required().messages({
-    'any.required': 'Type is required.',
-    'string.base': 'Type must be a string.',
-    'any.only': 'Type must be either Admin or User.',
-  }),
-  userId: Joi.string().messages({
+  userSponser_id: Joi.string().messages({
     'string.base': 'User ID must be a string.',
   }),
-  itemId: Joi.array().items(Joi.string()).messages({
-    'array.base': 'Item IDs must be an array of strings.',
-  })
+  // itemId: Joi.array().items(Joi.string()).messages({
+  //   'array.base': 'Item IDs must be an array of strings.',
+  // })
 });
 
 // Validate the company data
