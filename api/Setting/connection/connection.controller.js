@@ -202,31 +202,79 @@ exports.ListConnections = async (req, res, next) => {
 //     res.status(500).json({ error });
 //   }
 // };
+// exports.showConnection = async (req, res, next) => {
+//   try {
+//     const searchedSponserId = req.params.sponserId; // Assuming the parameter is sponserId
+
+//     // Find connections where the searchedSponserId is fromSponserId
+//     const connections = await ConnectionModel.find({ fromSponserId: searchedSponserId });
+
+//     // Check if any connections are found
+//     if (!connections || connections.length === 0) {
+//       console.log('Connection not found');
+//       return res.status(404).json({ message: 'Connection not found' });
+//     }
+
+//     const connectedSponserIds = connections.map(connection => connection.toSponserId);
+
+//     // Retrieve details of the searched sponsor ID
+//     const searchedSponser = await UserModel.findOne({ sponserId: searchedSponserId });
+
+//     // Retrieve details of connected sponsor IDs from the UserModel
+//     const connectedSponserDetails = await UserModel.find({ sponserId: { $in: connectedSponserIds } });
+
+//     // Construct response object including the searchedSponserId and its connectedSponserIds with details
+//     const response = {
+//       searchedSponser: searchedSponser,
+//       connectedSponserDetails: connectedSponserDetails
+//     };
+
+//     res.status(200).json(response);
+//   } catch (error) {
+//     res.status(500).json({ error });
+//   }
+// };
 exports.showConnection = async (req, res, next) => {
   try {
     const searchedSponserId = req.params.sponserId; // Assuming the parameter is sponserId
 
-    // Find connections where the searchedSponserId is fromSponserId
-    const connections = await ConnectionModel.find({ fromSponserId: searchedSponserId });
+    // Function to recursively find all connected sponsor IDs
+    const findAllConnectedSponsors = async (searchedId, visited = new Set()) => {
+      visited.add(searchedId);
 
-    // Check if any connections are found
-    if (!connections || connections.length === 0) {
-      console.log('Connection not found');
-      return res.status(404).json({ message: 'Connection not found' });
-    }
+      // Find connections where the searchedSponserId is fromSponserId
+      const connections = await ConnectionModel.find({ fromSponserId: searchedId });
 
-    const connectedSponserIds = connections.map(connection => connection.toSponserId);
+      if (!connections || connections.length === 0) {
+        return [];
+      }
+
+      let connectedSponserIds = connections.map(connection => connection.toSponserId);
+
+      // Recursively find all connected sponsor IDs for each connected sponsor ID
+      for (const connectedSponserId of connectedSponserIds) {
+        if (!visited.has(connectedSponserId)) {
+          const nestedConnections = await findAllConnectedSponsors(connectedSponserId, visited);
+          connectedSponserIds = connectedSponserIds.concat(nestedConnections);
+        }
+      }
+
+      return connectedSponserIds;
+    };
+
+    // Find all connected sponsor IDs recursively
+    const allConnectedSponserIds = await findAllConnectedSponsors(searchedSponserId);
 
     // Retrieve details of the searched sponsor ID
     const searchedSponser = await UserModel.findOne({ sponserId: searchedSponserId });
 
-    // Retrieve details of connected sponsor IDs from the UserModel
-    const connectedSponserDetails = await UserModel.find({ sponserId: { $in: connectedSponserIds } });
+    // Retrieve details of all connected sponsor IDs from the UserModel
+    const allConnectedSponserDetails = await UserModel.find({ sponserId: { $in: allConnectedSponserIds } });
 
-    // Construct response object including the searchedSponserId and its connectedSponserIds with details
+    // Construct response object including the searchedSponserId and all connectedSponserIds with details
     const response = {
       searchedSponser: searchedSponser,
-      connectedSponserDetails: connectedSponserDetails
+      allConnectedSponserDetails: allConnectedSponserDetails
     };
 
     res.status(200).json(response);
@@ -234,6 +282,8 @@ exports.showConnection = async (req, res, next) => {
     res.status(500).json({ error });
   }
 };
+
+
 
 // exports.showConnection = async (req, res, next) => {
 //   try {

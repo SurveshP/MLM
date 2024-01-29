@@ -55,7 +55,7 @@ exports.insertItemsCategories = async (req, res, next) => {
 // Display List
 exports.ListItemsCategoriess = async (req, res, next) => {
   try {
-    let itemsCategories = await ItemsCategoriesModel.find({ del_status: "Live" });
+    let itemsCategories = await ItemsCategoriesModel.find({ "disabled": false });
     if (!itemsCategories || itemsCategories.length === 0) {
       console.log('itemsCategoriesr not found');
       return res.status(404).json({ message: 'itemsCategories not found' });
@@ -121,7 +121,7 @@ exports.deleteItemsCategories = async (req, res, next) => {
 
     const updatedItemsCategories = await ItemsCategoriesModel.findByIdAndUpdate(
       id,
-      { del_status: "Deleted" },
+      { "disabled": true },
       { new: true }
     );
 

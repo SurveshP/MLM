@@ -11,6 +11,9 @@ router.get('/', connectionController.ListConnections);
 /* show */
 router.get('/:sponserId', connectionController.showConnection);
 
+/* connections show */
+router.get('/', connectionController.ListConnections);
+
 /* update */
 router.put('/:sponserId', connectionController.updateConnection);
 

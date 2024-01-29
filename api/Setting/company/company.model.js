@@ -9,7 +9,6 @@ const companySchema = Schema({
   contactNumber: { type: Number, required: true },
   emailAddress: { type: String, required: true, unique: true },
   userSponser_id:[{ type: String }],
-  // userSponsor_id: { type: Schema.Types.ObjectId, ref: 'User' },
   // item_id:[ { type: mongoose.Schema.Types.ObjectId, ref: "Items" }],
   disabled: { type: Boolean, default: false },
 }, {

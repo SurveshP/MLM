@@ -6,6 +6,7 @@ const userSchema = Joi.object({
     'string.base': 'Company ID must be a string.',
     'string.objectId': 'Company ID must be a valid ObjectId.',
   }),
+  fromSponsorId: Joi.string(),
   userName: Joi.string().required().messages({
     'any.required': 'User Name is required.',
     'string.base': 'User Name must be a string.',
@@ -21,7 +22,7 @@ const userSchema = Joi.object({
     'string.base': 'Email Address must be a string.',
     'string.email': 'Email Address must be a valid email.',
   }),
-  position: Joi.string().valid('Left', 'Right').required().messages({
+  position: Joi.string().valid('Left', 'Right').messages({
     'any.required': 'Type is required.',
     'string.base': 'Type must be a string.',
     'any.only': 'Type must be either Left or Right.',
