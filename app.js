@@ -9,6 +9,7 @@ dotenv.config();
 
 const indexRouter = require("./routes/index");
 const userRouter = require("./api/Setting/user/user.route");
+const adminRouter = require("./api/Setting/admin/admin.route");
 const companyRouter = require("./api/Setting/company/company.route");
 const itemsCategoriesRouter = require("./api/Setting/itemsCategories/itemsCategories.route");
 const itemsRouter = require("./api/Setting/items/items.route");
@@ -26,6 +27,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/user", userRouter);
+app.use("/admin", adminRouter);
 app.use("/company", companyRouter);
 app.use("/itemsCategories", itemsCategoriesRouter);
 app.use("/items", itemsRouter);

@@ -6,6 +6,7 @@ const Schema = mongoose.Schema;
 const userSchema = Schema({
   company_id:{ type: mongoose.Schema.Types.ObjectId, ref: "Company", required: [true, "Please enter company_id"] }, 
   sponserId: { type: String },
+  wallet: { type: Number, default: 0 },
   userName: { type: String, required: true },
   position: { type: String, enum: ['Left', 'Right'], required: true },
   type: { type: String, enum: ['Admin', 'User'], required: true },
@@ -18,5 +19,20 @@ const userSchema = Schema({
   timestamps: true
 });
 
+const adminCollectionSchema = Schema({
+  sponserId: { type: String },
+  walletAmount: { type: Number, default: 0 },
+  type: { type: String, enum: ['Add', 'WithDrawal'], required: true },
+}, {
+  timestamps: true
+});
 
-module.exports = mongoose.model("User", userSchema);
+
+// Export both models separately
+const UserModel = mongoose.model("User", userSchema);
+const AdminModel = mongoose.model("requests", adminCollectionSchema);
+
+module.exports = {
+  UserModel,
+  AdminModel
+};

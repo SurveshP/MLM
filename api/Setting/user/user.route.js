@@ -17,4 +17,11 @@ router.put('/:sponserId', userController.updateUser);
 /* Delete */
 router.delete('/:sponserId', userController.deleteUser);
 
+/* Wallet WithDrawal request */
+router.post('/WithDrawalRequest/:sponserId', userController.WithDrawalRequest);
+
+/* Wallet Add request */
+router.post('/AddRequest/:sponserId', userController.AddRequest);
+  
+
 module.exports = router;

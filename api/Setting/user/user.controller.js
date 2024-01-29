@@ -1,4 +1,4 @@
-const UserModel = require("./user.model");
+const { UserModel, AdminModel } = require("./user.model");
 const CompanyModel  = require("../company/company.model");
 const { validateUser, validateUpdate } = require("./user.validator");
 const bcrypt = require('bcrypt');
@@ -176,6 +176,53 @@ exports.deleteUser = async (req, res, next) => {
     }
 
     res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
+  }
+};
+
+
+/* Wallet WithDrawal request */
+exports.WithDrawalRequest = async (req, res, next) => {
+  try {
+    const { sponserId, walletAmount } = req.body;
+    const newWithdrawalRequest = new AdminModel({ 
+      sponserId: sponserId ,
+      walletAmount: walletAmount ,
+      type: "WithDrawal"
+      });
+      const savedWithdrawalRequest = await newWithdrawalRequest.save();
+
+      if (!savedWithdrawalRequest) {
+        return res.status(404).json({ message: "User not found." });
+      }
+
+    res.status(200).json({ message: "WithDrawal request added successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
+  }
+};
+
+/* Wallet Add request */
+exports.AddRequest = async (req, res, next) => {
+  try {
+    const { sponserId, walletAmount } = req.body;
+    const newAddrequest = new AdminModel({ 
+      sponserId: sponserId ,
+      walletAmount: walletAmount ,
+      type: "Add"
+    });
+    const savedAddrequest = await newAddrequest.save();
+
+    if (!savedAddrequest) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json({ message: "Add request added successfully" });
   } catch (error) {
     res
       .status(500)
