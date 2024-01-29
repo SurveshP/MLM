@@ -30,7 +30,7 @@ const adminCollectionSchema = Schema({
 
 // Export both models separately
 const UserModel = mongoose.model("User", userSchema);
-const AdminModel = mongoose.model("requests", adminCollectionSchema);
+const AdminModel = mongoose.model("Requests", adminCollectionSchema);
 
 module.exports = {
   UserModel,

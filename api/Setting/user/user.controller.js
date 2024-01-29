@@ -81,9 +81,9 @@ exports.showUsers = async (req, res) => {
 exports.showUser = async (req, res, next) => {
   try {
     const sponserId = req.params.sponserId; // Corrected variable name
-    console.log(sponserId);
+    console.log("bhag jaa",sponserId);
     const user = await UserModel.findOne({ sponserId: sponserId }); // Corrected field name
-    console.log(user);
+    console.log("hello",user);
 
     if (!user) {
       console.log("User not found");
@@ -229,3 +229,4 @@ exports.AddRequest = async (req, res, next) => {
       .json({ message: "Something went wrong", error: error.message });
   }
 };
+

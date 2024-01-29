@@ -9,7 +9,7 @@ router.post('/', userController.userInsert);
 router.get('/', userController.showUsers);
 
 /* show */
-router.get('/:sponserId', userController.showUser);
+// router.get('/:sponserId', userController.showUser);
 
 /* update */
 router.put('/:sponserId', userController.updateUser);
@@ -22,6 +22,7 @@ router.post('/WithDrawalRequest/:sponserId', userController.WithDrawalRequest);
 
 /* Wallet Add request */
 router.post('/AddRequest/:sponserId', userController.AddRequest);
+
   
 
 module.exports = router;
