@@ -10,7 +10,7 @@ const itemsSchema = Schema({
   description: { type: String, required: [true, "Please enter a description for the item"], trim: true },
   price: { type: Number, required: [true, "Please enter the price of the item"], min: [0, "Price cannot be negative"] },
   quantityInStock: { type: Number, required: [true, "Please enter the quantity in stock"], min: [0, "Quantity cannot be negative"] },
-  itemsCategories_id:{ type: mongoose.Schema.Types.ObjectId, ref: "ItemsCategories" },
+  itemsCategories_id:{ type: mongoose.Schema.Types.ObjectId, ref: "ItemsCategories", required: [true, "Please enter itemsCategories_id"] },
   disabled: { type: Boolean, default: false },
 }, {
   timestamps: true

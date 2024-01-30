@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 const itemsCategoriesSchema = Schema({
   itemCategoryName: { type: String, trim: true },
   description: { type: String, trim: true },
-  items_id:[ { type: mongoose.Schema.Types.ObjectId, ref: "Items" }],
+  items_id:{ type: String },
   disabled: { type: Boolean, default: false }
 }, {
   timestamps: true

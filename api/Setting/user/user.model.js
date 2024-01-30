@@ -7,7 +7,6 @@ const userSchema = Schema({
   company_id:{ type: mongoose.Schema.Types.ObjectId, ref: "Company", required: [true, "Please enter company_id"] }, 
   sponserId: { type: String },
   fromSponsorId: { type: String },
-  // toSponsorId: { type: String },
   userName: { type: String, required: true },
   position: { type: String, enum: ['Left', 'Right'] },
   type: { type: String, enum: ['Admin', 'User'], required: true },

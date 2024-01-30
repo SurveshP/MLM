@@ -1,39 +1,48 @@
 const ItemsModel = require('./items.model');
 const { validateItems, validateUpdate } = require('./items.validator');
-const CompanyModel  = require("../company/company.model");
+const ItemsCategoriesModel  = require("../itemsCategories/itemsCategories.model");
 const ItemCategoriesModel  = require("../itemsCategories/itemsCategories.model");
+
+function generateSponsorId(count) {
+  // Assuming count is a number like 1, 2, 3, ...
+  const formattedCount = count.toString().padStart(2, '0');
+  return `ITM-${formattedCount}`;
+}
 
 // Insert New items
 exports.insertItems = async (req, res, next) => {
   try {
     // Validation
-    const { error, value } = validateItems(req.body);
-    
+    let { error, value } = validateItems(req.body);
+
     // Check Error in Validation
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    // Check if ItemName already exists
-    const existingItemName = await UserModel.findOne({ itemName: value.itemName });
-    if (existingItemName) {
-      return res.status(400).json({ error: 'Item with the given name already exists' });
+    // Check if emailAddress already exists
+    const existingItemsName = await ItemsModel.findOne({ itemName: value.itemName });
+    if (existingItemsName) {
+      return res.status(400).json({ error: 'Items with the given itemName already exists' });
     }
-    
-    // Insert items
+
+    // Generate sponsorId
+    const count = await ItemsModel.countDocuments() + 1; // Get the count of existing documents
+    const sponsorId = generateSponsorId(count);
+
+    // Insert Items with sponsorId
+    value.sponserId = sponsorId;
     let itemsModel = new ItemsModel(value);
     let savedItems = await itemsModel.save();
 
-    // Update company with item_id
-    const companyId = req.body.company_id; // Assuming you pass company_id in the request body
-    if (companyId) {
-      await CompanyModel.findByIdAndUpdate(companyId, { $push: { item_id: savedItems._id } });
-    }
+    // Update itemsCategories with itemsSponser_id
+    const itemsCategoriesId = req.body.itemsCategories_id; // Assuming you pass itemsCategories_id in the request body
+    if (itemsCategoriesId) {
+      // Create a filter object using the itemsCategoriesId
+      const filter = { _id: itemsCategoriesId };
 
-    // Update itemCategories with item_id
-    const itemCategoriesId = req.body.itemCategories_id; // Assuming you pass itemCategories_id in the request body
-    if (itemCategoriesId) {
-      await ItemCategoriesModel.findByIdAndUpdate(itemCategoriesId, { $push: { item_id: savedItems._id } });
+      // Push the items's sponsorId into the itemsSponser_id array of the itemsCategories
+      await ItemsCategoriesModel.findOneAndUpdate(filter, { $push: { itemsSponser_id: savedItems.sponserId } });
     }
 
     // Send Response
@@ -122,7 +131,7 @@ exports.deleteItems = async (req, res, next) => {
       return res.status(404).json({ message: 'items not found' });
     }
 
-    res.status(200).json({ message: "User deleted successfully" });
+    res.status(200).json({ message: "Items deleted successfully" });
   } catch (error) {
     // Send Error Response
     res.status(500).json({ message: "Something went wrong", error: error.message });
