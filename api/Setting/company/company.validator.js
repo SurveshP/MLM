@@ -1,25 +1,34 @@
-const Joi = require("joi");
+import Joi from "joi";
 
 // Define the validation schema
 const companySchema = Joi.object({
-  companyName: Joi.string().max(50).min(5).required().trim(),
-  contactNumber: Joi.number().integer().min(1000000000).max(9999999999).required(),
-  email_address: Joi.string().email().required(),
-  active: Joi.boolean().default(true),
-  del_status: Joi.string().valid('Live', 'Deleted').default('Live'),
-  user_id: Joi.array().items(Joi.string().required())
+  companyName: Joi.string().required().messages({
+    'any.required': 'Company Name is required.',
+    'string.base': 'Company Name must be a string.',
+  }),
+  contactNumber: Joi.number().integer().required().messages({
+    'any.required': 'Contact Number is required.',
+    'number.base': 'Contact Number must be a number.',
+    'number.integer': 'Contact Number must be an integer.',
+  }),
+  emailAddress: Joi.string().email().required().messages({
+    'any.required': 'Email Address is required.',
+    'string.base': 'Email Address must be a string.',
+    'string.email': 'Email Address must be a valid email.',
+  }),
+  userSponser_id: Joi.string().messages({
+    'string.base': 'User ID must be a string.',
+  }),
+  // itemId: Joi.array().items(Joi.string()).messages({
+  //   'array.base': 'Item IDs must be an array of strings.',
+  // })
 });
 
 // Validate the company data
-function validateCompany(companyData) {
+export function validateCompany(companyData) {
   return companySchema.validate(companyData);
 }
 
-function validateUpdate(updateData) {
+export function validateUpdate(updateData) {
   return companySchema.validate(updateData);
 }
-
-module.exports = {
-  validateCompany,
-  validateUpdate,
-};

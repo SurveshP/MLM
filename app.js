@@ -1,34 +1,30 @@
-const createError = require("http-errors");
-const express = require("express");
-const dotenv = require("dotenv");
-const path = require('path');
-const logger = require('morgan');
-const mongoose = require("mongoose");
-
-dotenv.config();
-
-const indexRouter = require("./routes/index");
-const userRouter = require("./api/Setting/user/user.route");
-const companyRouter = require("./api/Setting/company/company.route");
-const itemsCategoriesRouter = require("./api/Setting/itemsCategories/itemsCategories.route");
-const itemsRouter = require("./api/Setting/items/items.route");
-const ordersRouter = require("./api/Setting/orders/orders.route");
+import createError from "http-errors";
+import express from "express";
+import dotenv from "dotenv";
+import path from "path";
+import logger from "morgan";
+import mongoose from "mongoose";
 
 const app = express();
+dotenv.config();
 
+import indexRouter from "./routes/index.js";
+import companyRouter from "./api/Setting/company/company.route.js";
+import { fileURLToPath } from "url";
+import userRouter from "./api/Setting/user/user.route.js";
 app.set("view engine", "jade");
 
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "public")));
+
+const __filename = fileURLToPath(import.meta.url); // Get directory name using import.meta.url
+const __dirname = path.dirname(__filename); // Get directory name using import.meta.url
+app.use("/", express.static(__dirname + "/public"));
 
 app.use("/", indexRouter);
-app.use("/user", userRouter);
 app.use("/company", companyRouter);
-app.use("/itemsCategories", itemsCategoriesRouter);
-app.use("/items", itemsRouter);
-app.use("/orders", ordersRouter);
+app.use("/user", userRouter);
 
 mongoose.set("strictQuery", false);
 
@@ -50,4 +46,4 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-module.exports = app;
+export default app;

@@ -1,29 +1,8 @@
-const CompanyModel = require('./company.model');
-const { validateCompany, validateUpdate } = require('./company.validator');
+import CompanyModel from './company.model.js';
+import { validateCompany, validateUpdate } from './company.validator.js';
 
 // Insert New company
-// exports.insertCompany = async (req, res, next) => {
-//   try {
-//     // Validation
-//     const { error, value } = validateCompany(req.body);
-    
-//     // Check Error in Validation
-//     if (error) {
-//         return res.status(400).send(error.details[0].message);
-//       }
-      
-//     // Insert company
-//     let companyModel = new CompanyModel(value);
-//     let savedData = await companyModel.save();
-
-//     // Send Response
-//     res.status(200).json({ message: 'Data inserted', data: savedData });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: 'Error inserting data into the database' });
-//   }
-// };
-exports.insertCompany = async (req, res, next) => {
+export const insertCompany = async (req, res, next) => {
   try {
     // Validation
     const { error, value } = validateCompany(req.body);
@@ -33,10 +12,10 @@ exports.insertCompany = async (req, res, next) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    // Check if CompanyName already exists
-    const existingCompanyName = await CompanyModel.findOne({ companyName: value.companyName });
+    // Check if emailAddress already exists
+    const existingCompanyName = await CompanyModel.findOne({ emailAddress: value.emailAddress });
     if (existingCompanyName) {
-      return res.status(400).json({ error: 'Company with the given name already exists' });
+      return res.status(400).json({ error: 'Company with the given emailAddress already exists' });
     }
     
     // Insert company
@@ -52,40 +31,43 @@ exports.insertCompany = async (req, res, next) => {
 };
 
 // Display List
-exports.ListCompanys = async (req, res, next) => {
+export const ListCompanys = async (req, res, next) => {
   try {
-    let company = await CompanyModel.find({ del_status: "Live" });
+    let company = await CompanyModel.find({ disabled: false }).populate('userSponser_id');
     if (!company || company.length === 0) {
       console.log('companyr not found');
       return res.status(404).json({ message: 'company not found' });
     }
-    res.status(200).json({ company });
+    res.status(200).json({ message: "success", company });
   } catch (error) {
-    res.status(500).json({ error });
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
   }
 };
 
 // Display Single company
-exports.showCompany = async (req, res, next) => {
+export const showCompany = async (req, res, next) => {
   try {
-    let id = req.params.id;
-    let company = await CompanyModel.findOne({ _id: id });
+    let companyId = req.params.id; // Assuming the parameter is companyId
+    let company = await CompanyModel.findById(companyId).populate('userSponser_id')
 
     if (!company) {
-      console.log('company not found');
-      return res.status(404).json({ message: 'company not found' });
+      console.log('Company not found');
+      return res.status(404).json({ message: 'Company not found' });
     }
 
     res.status(200).json({ company });
   } catch (error) {
-    res.status(500).json({ error });
+    console.error(error);
+    res.status(500).json({ error: 'Error retrieving company' });
   }
 };
 
 // Update company
-exports.updateCompany = async (req, res, next) => {
+export const updateCompany = async (req, res, next) => {
   try {
-    let id = req.params.id;
+    let companyId = req.params.id;
 
     // Validation
     let { error, value } = validateUpdate(req.body);
@@ -95,43 +77,43 @@ exports.updateCompany = async (req, res, next) => {
       return res.status(400).send(error.details[0].message);
     }
 
-    let company = await CompanyModel.findByIdAndUpdate({ _id: id }, value, {
-      new: true
+    // Find and update company based on sponserId
+    let company = await CompanyModel.findByIdAndUpdate({ _id: companyId }, value, {
+      new: true,
+      runValidators: true // Ensure validation is applied on update
     });
 
     if (!company) {
-      console.log('company not found');
-      return res.status(404).json({ message: 'company not found' });
+      console.log('Company not found');
+      return res.status(404).json({ message: 'Company not found' });
     }
 
     res.status(200).json({ company });
   } catch (error) {
-
-    console.log(error);
-    // Send Error Response
-    res.status(500).json('Error updating company');
+    console.error(error);
+    res.status(500).json({ error: 'Error updating company' });
   }
 };
 
-// // Delete company
-exports.deleteCompany = async (req, res, next) => {
+// Delete company
+export const deleteCompany = async (req, res, next) => {
   try {
-    let id = req.params.id;
+    let companyId = req.params.id;
 
     const updatedCompany = await CompanyModel.findByIdAndUpdate(
-      id,
-      { del_status: "Deleted" },
+      { _id: companyId },
+      { disabled: true },
       { new: true }
     );
 
     if (!updatedCompany) {
-      console.log('company not found');
-      return res.status(404).json({ message: 'company not found' });
+      console.log('Company not found');
+      return res.status(404).json({ message: 'Company not found' });
     }
 
-    res.status(200).json({ message: "User deleted successfully" });
+    res.status(200).json({ message: "Company deleted successfully" });
   } catch (error) {
-    // Send Error Response
+    console.error(error);
     res.status(500).json({ message: "Something went wrong", error: error.message });
   }
 };

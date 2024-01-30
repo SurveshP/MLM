@@ -1,20 +1,24 @@
-const express = require('express');
-const router = express.Router(); // access the method of route
-const userController = require('./user.controller');
+import express from 'express';
+import * as userController from './user.controller.js';
 
-// add user
+const router = express.Router();
+
+// Add user
 router.post('/', userController.userInsert);
 
-// all users
-router.get('/', userController.showUsers);
+// All users
+router.get('/', userController.showAllUsers);
 
-/* show */
-router.get('/:id', userController.showUser);
+// Show user
+router.get('/:sponserId', userController.showUser);
 
-/* update */
-router.put('/:id', userController.updateUser);
+// Show user from sponsorId
+router.get('/fromSponsorId/:sponserId', userController.showUserFromSponsorId);
 
-/* Delete */
-router.delete('/:id', userController.deleteUser);
+// Update user
+router.put('/:sponserId', userController.updateUser);
 
-module.exports = router;
+// Delete user
+router.delete('/:sponserId', userController.deleteUser);
+
+export default router;
