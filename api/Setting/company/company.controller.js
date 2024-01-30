@@ -1,9 +1,8 @@
-const CompanyModel = require('./company.model');
-const UserModel = require('../user/user.model');
-const { validateCompany, validateUpdate } = require('./company.validator');
+import CompanyModel from './company.model.js';
+import { validateCompany, validateUpdate } from './company.validator.js';
 
 // Insert New company
-exports.insertCompany = async (req, res, next) => {
+export const insertCompany = async (req, res, next) => {
   try {
     // Validation
     const { error, value } = validateCompany(req.body);
@@ -32,7 +31,7 @@ exports.insertCompany = async (req, res, next) => {
 };
 
 // Display List
-exports.ListCompanys = async (req, res, next) => {
+export const ListCompanys = async (req, res, next) => {
   try {
     let company = await CompanyModel.find({ disabled: false }).populate('userSponser_id');
     if (!company || company.length === 0) {
@@ -48,7 +47,7 @@ exports.ListCompanys = async (req, res, next) => {
 };
 
 // Display Single company
-exports.showCompany = async (req, res, next) => {
+export const showCompany = async (req, res, next) => {
   try {
     let companyId = req.params.id; // Assuming the parameter is companyId
     let company = await CompanyModel.findById(companyId).populate('userSponser_id')
@@ -65,12 +64,8 @@ exports.showCompany = async (req, res, next) => {
   }
 };
 
-
-
-
-
 // Update company
-exports.updateCompany = async (req, res, next) => {
+export const updateCompany = async (req, res, next) => {
   try {
     let companyId = req.params.id;
 
@@ -100,8 +95,8 @@ exports.updateCompany = async (req, res, next) => {
   }
 };
 
-// // Delete company
-exports.deleteCompany = async (req, res, next) => {
+// Delete company
+export const deleteCompany = async (req, res, next) => {
   try {
     let companyId = req.params.id;
 
@@ -122,4 +117,3 @@ exports.deleteCompany = async (req, res, next) => {
     res.status(500).json({ message: "Something went wrong", error: error.message });
   }
 };
-

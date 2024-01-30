@@ -1,4 +1,4 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 const userSchema = Joi.object({
   company_id: Joi.string().required().messages({
@@ -41,35 +41,14 @@ const userSchema = Joi.object({
   }),
 });
 
-// Validate the area data
+// Validate the user data
 function validateUser(userData) {
   return userSchema.validate(userData);
 }
 
+// Validate the update data
 function validateUpdate(updateData) {
   return userSchema.validate(updateData);
 }
 
-//Validate the user data
-// function validateUser(userData) {
-//   const { error, value } = userSchema.validate(userData);
-//   if (error) {
-//     const errorMessage = error.details.map((detail) => detail.message).join(", ");
-//     throw new Error(errorMessage);
-//   }
-//   return value;
-// }
-
-// Validate the update data
-// function validateUpdate(updateData) {
-//   const { error, value } = userSchema.validate(updateData);
-//   if (error) {const errorMessage = error.details.map((detail) => detail.message).join(", ");
-//     throw new Error(errorMessage);
-//   }
-//   return value;
-// }
-
-module.exports = {
-  validateUser,
-  validateUpdate
-};
+export { validateUser, validateUpdate };

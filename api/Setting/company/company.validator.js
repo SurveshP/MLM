@@ -1,4 +1,4 @@
-const Joi = require("joi");
+import Joi from "joi";
 
 // Define the validation schema
 const companySchema = Joi.object({
@@ -25,15 +25,10 @@ const companySchema = Joi.object({
 });
 
 // Validate the company data
-function validateCompany(companyData) {
+export function validateCompany(companyData) {
   return companySchema.validate(companyData);
 }
 
-function validateUpdate(updateData) {
+export function validateUpdate(updateData) {
   return companySchema.validate(updateData);
 }
-
-module.exports = {
-  validateCompany,
-  validateUpdate,
-};

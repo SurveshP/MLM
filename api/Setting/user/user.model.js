@@ -1,11 +1,10 @@
-const express = require('express');
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const Schema = mongoose.Schema;
+const { Schema, model } = mongoose;
 
 const userSchema = Schema({
   company_id:{ type: mongoose.Schema.Types.ObjectId, ref: "Company", required: [true, "Please enter company_id"] }, 
-  sponserId: { type: String },
+  sponsorId: { type: String },
   fromSponsorId: { type: String },
   userName: { type: String, required: true },
   position: { type: String, enum: ['Left', 'Right'] },
@@ -19,5 +18,4 @@ const userSchema = Schema({
   timestamps: true
 });
 
-
-module.exports = mongoose.model("User", userSchema);
+export default model("User", userSchema);
