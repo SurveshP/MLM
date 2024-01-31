@@ -1,16 +1,8 @@
-import CompanyModel from './company.model.js';
-import { validateCompany, validateUpdate } from './company.validator.js';
+import CompanyModel from "../models/company.model.js";
 
 // Insert New company
 export const insertCompany = async (req, res, next) => {
   try {
-    // Validation
-    const { error, value } = validateCompany(req.body);
-    
-    // Check Error in Validation
-    if (error) {
-      return res.status(400).json({ error: error.details[0].message });
-    }
 
     // Check if emailAddress already exists
     const existingCompanyName = await CompanyModel.findOne({ emailAddress: value.emailAddress });
@@ -25,8 +17,10 @@ export const insertCompany = async (req, res, next) => {
     // Send Response
     res.status(200).json({ message: 'Company data inserted', data: savedCompany });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error inserting company data into the database' });
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Something went wrong",
+    });
   }
 };
 
@@ -69,14 +63,6 @@ export const updateCompany = async (req, res, next) => {
   try {
     let companyId = req.params.id;
 
-    // Validation
-    let { error, value } = validateUpdate(req.body);
-
-    // Check Error in Validation
-    if (error) {
-      return res.status(400).send(error.details[0].message);
-    }
-
     // Find and update company based on sponserId
     let company = await CompanyModel.findByIdAndUpdate({ _id: companyId }, value, {
       new: true,
@@ -90,8 +76,10 @@ export const updateCompany = async (req, res, next) => {
 
     res.status(200).json({ company });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error updating company' });
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Something went wrong",
+    });
   }
 };
 
