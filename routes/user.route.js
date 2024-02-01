@@ -1,7 +1,5 @@
 import express from 'express';
 import * as userController from '../controllers/user.controller.js';
-// import SchemaValidator from "../middlewares/schemaValidator.js";
-// const validateRequest = SchemaValidator(true);
 const router = express.Router();
 
 // Add user

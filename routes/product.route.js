@@ -1,6 +1,5 @@
 import express from 'express';
 import * as productController from '../controllers/product.controller.js';
-// const connectionController = require('./connection.controller');
 
 const router = express.Router();
 
