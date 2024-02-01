@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import userRouter from "./routes/user.route.js";
 import productRouter from "./routes/product.route.js";
 import categoryRouter from "./routes/category.route.js";
+import orderRouter from "./routes/order.route.js";
 import Connection from "./database/db.js";
 
 /********************************************/
@@ -27,6 +28,7 @@ app.use("/admin", adminRouter);
 app.use("/user", userRouter);
 app.use("/product", productRouter);
 app.use("/category", categoryRouter);
+app.use("/order", orderRouter);
 
 /*******************ROUTES******************/
 
