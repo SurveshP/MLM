@@ -41,7 +41,6 @@ export async function userInsert(req, res) {
 
     // Insert User with sponsorId
     const newUser = new UserModel(userDate);
-
     newUser.password = hashedPassword;
     newUser.sponsorId = sponsorId;
     const savedUser = await newUser.save();
