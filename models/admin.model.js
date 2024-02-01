@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 const adminSchema = Schema({
   sponsorId: { type: String },
   adminName: { type: String, required: true },
-  contactNumber: { type: Number },
+  contactNumber: { type: Number, required: true },
   emailAddress: { type: String, required: true, unique: true },
   password: { type: String, required: true },  
   user_id:[ { type: String, ref: "User" }],

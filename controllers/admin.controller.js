@@ -11,15 +11,17 @@ function generateSponsorId(count) {
 // Insert New admin
 export async function insertAdmin(req, res) {
   try {
-    const {
-      emailAddress,
-      password,
-      admin_id,
-    } = req.body;
+    const adminData = req.body;
+
+    // Validate admin data before insertion
+    const { error } = validateCreateAdmin(adminData);
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
 
     // Check if emailAddress already exists
     const existingAdmin = await AdminModel.findOne({
-      emailAddress: emailAddress,
+      emailAddress: adminData.emailAddress,
     });
     if (existingAdmin) {
       return res
@@ -33,24 +35,24 @@ export async function insertAdmin(req, res) {
 
     // Replace the plain password with the hashed one
     const saltRounds = 10; // Adjust the number of salt rounds as needed
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const hashedPassword = await bcrypt.hash(adminData.password, saltRounds);
 
     // Insert Admin with sponsorId
-    const newAdmin = new AdminModel(req.body);
+    const newAdmin = new AdminModel(adminData);
 
     newAdmin.password = hashedPassword;
     newAdmin.sponsorId = sponsorId;
     const savedAdmin = await newAdmin.save();
 
-    if (admin_id) {
-      // Create a filter object using the adminId
-      const filter = { _id: admin_id };
+    // if (adminData.admin_id) {
+    //   // Create a filter object using the adminId
+    //   const filter = { _id: adminData.admin_id };
 
-      // Push the admin's sponsorId into the adminSponsor_id array of the admin
-      await AdminModel.findOneAndUpdate(filter, {
-        $push: { adminSponser_id: savedAdmin.sponsorId },
-      });
-    }
+    //   // Push the admin's sponsorId into the adminSponsor_id array of the admin
+    //   await AdminModel.findOneAndUpdate(filter, {
+    //     $push: { adminSponser_id: savedAdmin.sponsorId },
+    //   });
+    // }
 
     // Send Response
     res.status(200).json({ message: "Admin data inserted", data: savedAdmin });
@@ -99,30 +101,38 @@ export async function  showAdmin(req, res, next){
 };
 
 // Update admin
-export async function  updateAdmin(req, res, next){
+export async function updateAdmin(req, res, next) {
   try {
     const adminId = req.params.sponsorId;
-    const adminData = req.body;
+    const adminDataToUpdate = req.body;
+
+    // Validate the update data
+    const { error } = validateUpdateAdmin(adminDataToUpdate);
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
 
     // Get the existing admin by ID using Mongoose
-    const existingAdmin = await AdminModel.findOneAndUpdate({sponsorId: adminId});
+    const existingAdmin = await AdminModel.findOne({ sponsorId: adminId });
 
     if (!existingAdmin) {
-      return res.status(404).json({ message: 'Admin not found', });
+      return res.status(404).json({ message: 'Admin not found' });
     }
-    
-    Object.assign(existingAdmin, adminData);
+
+    // Update only the fields that are present in the request body
+    Object.assign(existingAdmin, adminDataToUpdate);
+
+    // Save the updated admin
     const updatedAdmin = await existingAdmin.save();
-    
+
     // Send the updated admin as JSON response
-    res.status(200).json({  message: 'success', admin: updatedAdmin });
+    res.status(200).json({ message: 'Admin updated successfully', admin: updatedAdmin });
   } catch (error) {
     // Send Error Response
-    res
-      .status(500)
-      .json({ message: "Something went wrong", error: error.message });
+    res.status(500).json({ message: 'Something went wrong', error: error.message });
   }
 };
+
 
 // Delete admin
 export async function  deleteAdmin(req, res, next){

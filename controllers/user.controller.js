@@ -1,5 +1,6 @@
 import UserModel from "../models/user.model.js";
 import AdminModel from "../models/admin.model.js";
+import { validateCreateUser, validateUpdateUser } from '../validators/user.validator.js';
 import bcrypt from "bcrypt";
 
 function generateSponsorId(count) {
@@ -11,15 +12,18 @@ function generateSponsorId(count) {
 // Create User
 export async function userInsert(req, res) {
   try {
-    const {
-      emailAddress,
-      password,
-      admin_id,
-    } = req.body;
+    const userDate = req.body;
+
+    
+    // Validate admin data before insertion
+    const { error } = validateCreateUser(userDate);
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
 
     // Check if emailAddress already exists
     const existingUser = await UserModel.findOne({
-      emailAddress: emailAddress,
+      emailAddress: userDate.emailAddress,
     });
     if (existingUser) {
       return res
@@ -33,24 +37,24 @@ export async function userInsert(req, res) {
 
     // Replace the plain password with the hashed one
     const saltRounds = 10; // Adjust the number of salt rounds as needed
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const hashedPassword = await bcrypt.hash(userDate.password, saltRounds);
 
     // Insert User with sponsorId
-    const newUser = new UserModel(req.body);
+    const newUser = new UserModel(userDate);
 
     newUser.password = hashedPassword;
     newUser.sponsorId = sponsorId;
     const savedUser = await newUser.save();
 
-    if (admin_id) {
-      // Create a filter object using the adminId
-      const filter = { _id: admin_id };
+    // if (userDate.admin_id) {
+    //   // Create a filter object using the adminId
+    //   const filter = { _id: userDate.admin_id };
 
-      // Push the user's sponsorId into the userSponsor_id array of the admin
-      await AdminModel.findOneAndUpdate(filter, {
-        $push: { user_id: savedUser.sponsorId },
-      });
-    }
+    //   // Push the user's sponsorId into the userSponsor_id array of the admin
+    //   await AdminModel.findOneAndUpdate(filter, {
+    //     $push: { user_id: savedUser.sponsorId },
+    //   });
+    // }
 
     // Send Response
     res.status(200).json({ message: "User data inserted", data: savedUser });
@@ -85,12 +89,11 @@ export async function showAllUsers(req, res) {
 // Display Single User
 export async function showUser(req, res) {
   try {
-    const sponserId = req.params.sponserId; // Corrected variable name
-    const user = await UserModel.findOne({ sponsorId: sponserId }); // Corrected field name
+    const sponsorId = req.params.sponsorId; // Corrected variable name
+    const user = await UserModel.findOne({ sponsorId: sponsorId }); // Corrected field name
     console.log(user);
 
     if (!user) {
-      console.log("---NOT---");
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -105,7 +108,7 @@ export async function showUser(req, res) {
 // Display the User of fromSponsorId and sponsorId
 export async function showUserFromSponsorId(req, res) {
   try {
-    const searchedSponsorId = req.params.sponserId; // Assuming the parameter is sponsorId
+    const searchedSponsorId = req.params.sponsorId; // Assuming the parameter is sponsorId
 
     // Function to recursively find all connected sponsor IDs
     const findAllConnectedSponsors = async (
@@ -169,21 +172,27 @@ export async function showUserFromSponsorId(req, res) {
 // Update User
 export async function updateUser(req, res) {
   try {
-    const sponsorId = req.params.sponserId;
-    const userData = req.body;
+    const userId = req.params.sponsorId;
+    const userDataToUpdate = req.body;
 
-    // Get the existing user by ID using Mongoose
-    const existingUser = await UserModel.findOneAndUpdate({ sponsorId: sponsorId });
+    // Validate user data before update
+    const { error } = validateUpdateUser(userDataToUpdate);
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
 
+    // Get the existing user by sponsorId
+    const existingUser = await UserModel.findOne({ sponsorId: userId });
     if (!existingUser) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    Object.assign(existingUser, userData);
+    // Update user fields
+    Object.assign(existingUser, userDataToUpdate);
     const updatedUser = await existingUser.save();
 
     // Send the updated user as JSON response
-    res.status(200).json({ message: "success", user: updatedUser });
+    res.status(200).json({ message: "User updated successfully", user: updatedUser });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -195,9 +204,9 @@ export async function updateUser(req, res) {
 // Delete User
 export async function deleteUser(req, res, next) {
   try {
-    const sponserId = req.params.sponsorId;
+    const sponsorId = req.params.sponsorId;
     const updatedUser = await UserModel.findOneAndUpdate(
-      { sponserId: sponserId },
+      { sponsorId: sponsorId },
       { disabled: "true" },
       { new: true }
     );

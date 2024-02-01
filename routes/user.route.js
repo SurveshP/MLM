@@ -1,25 +1,25 @@
 import express from 'express';
 import * as userController from '../controllers/user.controller.js';
-import SchemaValidator from "../middlewares/schemaValidator.js";
-const validateRequest = SchemaValidator(true);
+// import SchemaValidator from "../middlewares/schemaValidator.js";
+// const validateRequest = SchemaValidator(true);
 const router = express.Router();
 
 // Add user
-router.post('/userInsert', validateRequest, userController.userInsert);
+router.post('/userInsert', userController.userInsert);
 
 // All users
 router.get('/showAllUsers', userController.showAllUsers);
 
 // Show user
-router.get('/showUser/:sponserId', userController.showUser);
+router.get('/showUser/:sponsorId', userController.showUser);
 
 // Show user from sponsorId
-router.get('/fromSponsorId/:sponserId', userController.showUserFromSponsorId);
+router.get('/showUser/fromSponsorId/:sponsorId', userController.showUserFromSponsorId);
 
 // Update user
-router.put('/updateUser/:sponserId', userController.updateUser);
+router.put('/updateUser/:sponsorId', userController.updateUser);
 
 // Delete user
-router.delete('/deleteUser/:sponserId', userController.deleteUser);
+router.delete('/deleteUser/:sponsorId', userController.deleteUser);
 
 export default router;
