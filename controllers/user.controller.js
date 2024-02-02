@@ -10,20 +10,75 @@ function generateSponsorId(count) {
 }
 
 // Create User
-export async function userInsert(req, res) {
-  try {
-    const userDate = req.body;
+// export async function userInsert(req, res) {
+//   try {
+//     const userDate = req.body;
 
     
-    // Validate admin data before insertion
-    const { error } = validateCreateUser(userDate);
+//     // Validate admin data before insertion
+//     const { error } = validateCreateUser(userDate);
+//     if (error) {
+//       return res.status(400).json({ error: error.message });
+//     }
+
+//     // Check if emailAddress already exists
+//     const existingUser = await UserModel.findOne({
+//       emailAddress: userDate.emailAddress,
+//     });
+//     if (existingUser) {
+//       return res
+//         .status(400)
+//         .json({ error: "User with the given emailAddress already exists" });
+//     }
+
+//     // Generate sponsorId
+//     const count = (await UserModel.countDocuments()) + 1; // Get the count of existing documents
+//     const sponsorId = generateSponsorId(count);
+
+//     // Replace the plain password with the hashed one
+//     const saltRounds = 10; // Adjust the number of salt rounds as needed
+//     const hashedPassword = await bcrypt.hash(userDate.password, saltRounds);
+
+//     // Insert User with sponsorId
+//     const newUser = new UserModel(userDate);
+//     newUser.password = hashedPassword;
+//     newUser.sponsorId = sponsorId;
+//     const savedUser = await newUser.save();
+
+//     // if (userDate.admin_id) {
+//     //   // Create a filter object using the adminId
+//     //   const filter = { _id: userDate.admin_id };
+
+//     //   // Push the user's sponsorId into the userSponsor_id array of the admin
+//     //   await AdminModel.findOneAndUpdate(filter, {
+//     //     $push: { user_id: savedUser.sponsorId },
+//     //   });
+//     // }
+
+//     // Send Response
+//     res.status(200).json({ message: "User data inserted", data: savedUser });
+//   } catch (error) {
+//     return res
+//       .status(500)
+//       .json({
+//         success: false,
+//         message: error.message || "Something went wrong",
+//       });
+//   }
+// }
+export async function userInsert(req, res) {
+  try {
+    const userData = req.body;
+
+    // Validate user data before insertion
+    const { error } = validateCreateUser(userData);
     if (error) {
       return res.status(400).json({ error: error.message });
     }
 
     // Check if emailAddress already exists
     const existingUser = await UserModel.findOne({
-      emailAddress: userDate.emailAddress,
+      emailAddress: userData.emailAddress,
     });
     if (existingUser) {
       return res
@@ -37,23 +92,13 @@ export async function userInsert(req, res) {
 
     // Replace the plain password with the hashed one
     const saltRounds = 10; // Adjust the number of salt rounds as needed
-    const hashedPassword = await bcrypt.hash(userDate.password, saltRounds);
+    const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
 
     // Insert User with sponsorId
-    const newUser = new UserModel(userDate);
+    const newUser = new UserModel(userData);
     newUser.password = hashedPassword;
     newUser.sponsorId = sponsorId;
     const savedUser = await newUser.save();
-
-    // if (userDate.admin_id) {
-    //   // Create a filter object using the adminId
-    //   const filter = { _id: userDate.admin_id };
-
-    //   // Push the user's sponsorId into the userSponsor_id array of the admin
-    //   await AdminModel.findOneAndUpdate(filter, {
-    //     $push: { user_id: savedUser.sponsorId },
-    //   });
-    // }
 
     // Send Response
     res.status(200).json({ message: "User data inserted", data: savedUser });

@@ -1,4 +1,5 @@
 import OrderModel from '../models/order.model.js';
+import UserModel from '../models/user.model.js';
 import { validateCreateOrder, validateUpdateOrder } from '../validators/order.validator.js';
 
 function generateOrderId(count) {
@@ -8,6 +9,46 @@ function generateOrderId(count) {
 }
 
 // Insert New order
+// export async function insertOrder(req, res) {
+//   try {
+//     const orderData = req.body;
+
+//     // Validate order data before insertion
+//     const { error } = validateCreateOrder(orderData);
+//     if (error) {
+//       return res.status(400).json({ error: error.message });
+//     }
+
+//     // Generate orderId
+//     const count = (await OrderModel.countDocuments()) + 1; // Get the count of existing documents
+//     const orderId = generateOrderId(count);
+
+//     // Insert Order with orderId
+//     const newOrder = new OrderModel(orderData);
+//     newOrder.orderId = orderId;
+//     const savedOrder = await newOrder.save();
+
+//     // if (orderData.order_id) {
+//     //   // Create a filter object using the orderId
+//     //   const filter = { _id: orderData.order_id };
+
+//     //   // Push the order's orderId into the orderSponsor_id array of the order
+//     //   await OrderModel.findOneAndUpdate(filter, {
+//     //     $push: { orderSponser_id: savedOrder.orderId },
+//     //   });
+//     // }
+
+//     // Send Response
+//     res.status(200).json({ message: "Order data inserted", data: savedOrder });
+//   } catch (error) {
+//     return res
+//       .status(500)
+//       .json({
+//         success: false,
+//         message: error.message || "Something went wrong",
+//       });
+//   }
+// };
 export async function insertOrder(req, res) {
   try {
     const orderData = req.body;
@@ -27,15 +68,24 @@ export async function insertOrder(req, res) {
     newOrder.orderId = orderId;
     const savedOrder = await newOrder.save();
 
-    // if (orderData.order_id) {
-    //   // Create a filter object using the orderId
-    //   const filter = { _id: orderData.order_id };
-
-    //   // Push the order's orderId into the orderSponsor_id array of the order
-    //   await OrderModel.findOneAndUpdate(filter, {
-    //     $push: { orderSponser_id: savedOrder.orderId },
-    //   });
-    // }
+    // Check if orderStatus is 'Delivered'
+    if (orderData.orderStatus === 'Delivered') {
+      // Update user with sponsorId
+      const userId = orderData.userId; // Assuming you pass sponsorId in the request body
+      console.log('userId--->', userId);
+      if (userId) {
+        // Find the user by sponsorId
+        const user = await UserModel.findOne({ sponsorId: userId });
+        if (user) {
+          // Push orderId to the user's orderId array
+          user.orderId.push(orderId);
+          // Save the user
+          await user.save();
+        } else {
+          throw new Error("User not found");
+        }
+      }
+    }
 
     // Send Response
     res.status(200).json({ message: "Order data inserted", data: savedOrder });
@@ -47,7 +97,7 @@ export async function insertOrder(req, res) {
         message: error.message || "Something went wrong",
       });
   }
-};
+}
 
 // Display List
 export async function  ListOrders(req, res, next){
