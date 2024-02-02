@@ -157,6 +157,24 @@ export async function updateOrder(req, res, next) {
     // Save the updated order
     const updatedOrder = await existingOrder.save();
 
+    // Check if orderStatus is 'Delivered'
+    if (existingOrder.orderStatus === 'Delivered') {
+      // Update user with userId
+      const userId = existingOrder.userId; // Assuming you pass userId in the request body
+      if (userId) {
+        // Find the user by userId
+        const user = await UserModel.findOne({ userId: userId });
+        if (user) {
+          // Push orderId to the user's orderId array
+          user.orderId.push(orderId);
+          // Save the user
+          await user.save();
+        } else {
+          throw new Error("User not found");
+        }
+      }
+    }
+
     // Send the updated order as JSON response
     res.status(200).json({ message: 'Order updated successfully', order: updatedOrder });
   } catch (error) {

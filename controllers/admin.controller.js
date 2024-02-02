@@ -139,14 +139,10 @@ export async function  deleteAdmin(req, res, next){
   try {
     let adminId = req.params.adminId;
 
-    const updatedAdmin = await AdminModel.deleteOne(
+    const deletedAdmin = await AdminModel.deleteOne(
       { adminId: adminId },
       { new: true }
     );
-
-    if (!updatedAdmin) {
-      return res.status(404).json({ message: "Admin not found." });
-    }
 
     res.status(200).json({ message: "Admin deleted successfully" });
   } catch (error) {
