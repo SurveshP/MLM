@@ -70,12 +70,11 @@ export async function insertOrder(req, res) {
 
     // Check if orderStatus is 'Delivered'
     if (orderData.orderStatus === 'Delivered') {
-      // Update user with sponsorId
-      const userId = orderData.userId; // Assuming you pass sponsorId in the request body
-      console.log('userId--->', userId);
+      // Update user with userId
+      const userId = orderData.userId; // Assuming you pass userId in the request body
       if (userId) {
-        // Find the user by sponsorId
-        const user = await UserModel.findOne({ sponsorId: userId });
+        // Find the user by userId
+        const user = await UserModel.findOne({ userId: userId });
         if (user) {
           // Push orderId to the user's orderId array
           user.orderId.push(orderId);
@@ -100,7 +99,7 @@ export async function insertOrder(req, res) {
 }
 
 // Display List
-export async function  ListOrders(req, res, next){
+export async function ListOrders(req, res, next) {
   try {
     let order = await OrderModel.find({ disabled: "false" });
     if (!order || order.length === 0) {
@@ -116,10 +115,10 @@ export async function  ListOrders(req, res, next){
 };
 
 // Display Single order
-export async function  showOrder(req, res, next){
+export async function showOrder(req, res, next) {
   try {
     let orderId = req.params.orderId; // Assuming the parameter is orderId
-    let order = await OrderModel.findOne({orderId: orderId});
+    let order = await OrderModel.findOne({ orderId: orderId });
 
     if (!order) {
       console.log('Order not found');
@@ -168,7 +167,7 @@ export async function updateOrder(req, res, next) {
 
 
 // Delete order
-export async function  deleteOrder(req, res, next){
+export async function deleteOrder(req, res, next) {
   try {
     let orderId = req.params.orderId;
 

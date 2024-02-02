@@ -5,8 +5,8 @@ import Joi from 'joi';
 // Validate the user data
 export function validateCreateUser(userData) {
   const userSchema = Joi.object({
-    admin_id: Joi.string().required(),
-    fromSponsorId: Joi.string(),
+    adminId: Joi.string().required(),
+    fromuserId: Joi.string(),
     userName: Joi.string().required(),
     position: Joi.string().valid('Left', 'Right').required(),
     type: Joi.string().required(),

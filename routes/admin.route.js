@@ -11,12 +11,12 @@ router.post('/', adminController.insertAdmin);
 router.get('/', adminController.ListAdmins);
 
 /* show */
-router.get('/:sponsorId', adminController.showAdmin);
+router.get('/:adminId', adminController.showAdmin);
 
 /* update */
-router.put('/:sponsorId', adminController.updateAdmin);
+router.put('/:adminId', adminController.updateAdmin);
 
 /* Delete */
-router.delete('/:sponsorId', adminController.deleteAdmin);
+router.delete('/:adminId', adminController.deleteAdmin);
 
 export default router;

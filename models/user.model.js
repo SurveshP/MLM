@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const userSchema = Schema({
-  admin_id: { type: String, required: true },
-  sponsorId: { type: String },
-  fromSponsorId: { type: String },
+  adminId: { type: String, required: true },
+  userId: { type: String },
+  fromuserId: { type: String },
   userName: { type: String },
   position: { type: String, enum: ['Left', 'Right'] },
   type: { type: String },
