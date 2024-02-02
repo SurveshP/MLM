@@ -9,15 +9,15 @@ router.post('/userInsert', userController.userInsert);
 router.get('/showAllUsers', userController.showAllUsers);
 
 // Show user
-router.get('/showUser/:sponsorId', userController.showUser);
+router.get('/showUser/:userId', userController.showUser);
 
 // Show user from sponsorId
-router.get('/showUser/fromSponsorId/:sponsorId', userController.showUserFromSponsorId);
+router.get('/showUser/fromuserId/:userId', userController.showUserFromuserId);
 
 // Update user
-router.put('/updateUser/:sponsorId', userController.updateUser);
+router.put('/updateUser/:userId', userController.updateUser);
 
 // Delete user
-router.delete('/deleteUser/:sponsorId', userController.deleteUser);
+router.delete('/deleteUser/:userId', userController.deleteUser);
 
 export default router;

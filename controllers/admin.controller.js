@@ -2,7 +2,7 @@ import AdminModel from '../models/admin.model.js';
 import { validateCreateAdmin, validateUpdateAdmin } from '../validators/admin.validator.js';
 import bcrypt from 'bcrypt';
 
-function generateSponsorId(count) {
+function generateadminId(count) {
   // Assuming count is a number like 1, 2, 3, ...
   const formattedCount = count.toString().padStart(2, '0');
   return `ADM-${formattedCount}`;
@@ -29,28 +29,28 @@ export async function insertAdmin(req, res) {
         .json({ error: "Admin with the given emailAddress already exists" });
     }
 
-    // Generate sponsorId
+    // Generate adminId
     const count = (await AdminModel.countDocuments()) + 1; // Get the count of existing documents
-    const sponsorId = generateSponsorId(count);
+    const adminId = generateadminId(count);
 
     // Replace the plain password with the hashed one
     const saltRounds = 10; // Adjust the number of salt rounds as needed
     const hashedPassword = await bcrypt.hash(adminData.password, saltRounds);
 
-    // Insert Admin with sponsorId
+    // Insert Admin with adminId
     const newAdmin = new AdminModel(adminData);
 
     newAdmin.password = hashedPassword;
-    newAdmin.sponsorId = sponsorId;
+    newAdmin.adminId = adminId;
     const savedAdmin = await newAdmin.save();
 
     // if (adminData.admin_id) {
     //   // Create a filter object using the adminId
     //   const filter = { _id: adminData.admin_id };
 
-    //   // Push the admin's sponsorId into the adminSponsor_id array of the admin
+    //   // Push the admin's adminId into the adminSponsor_id array of the admin
     //   await AdminModel.findOneAndUpdate(filter, {
-    //     $push: { adminSponser_id: savedAdmin.sponsorId },
+    //     $push: { adminSponser_id: savedAdmin.adminId },
     //   });
     // }
 
@@ -85,8 +85,8 @@ export async function  ListAdmins(req, res, next){
 // Display Single admin
 export async function  showAdmin(req, res, next){
   try {
-    let adminId = req.params.sponsorId; // Assuming the parameter is adminId
-    let admin = await AdminModel.findOne({sponsorId: adminId});
+    let adminId = req.params.adminId; // Assuming the parameter is adminId
+    let admin = await AdminModel.findOne({adminId: adminId});
 
     if (!admin) {
       console.log('Admin not found');
@@ -103,7 +103,7 @@ export async function  showAdmin(req, res, next){
 // Update admin
 export async function updateAdmin(req, res, next) {
   try {
-    const adminId = req.params.sponsorId;
+    const adminId = req.params.adminId;
     const adminDataToUpdate = req.body;
 
     // Validate the update data
@@ -113,7 +113,7 @@ export async function updateAdmin(req, res, next) {
     }
 
     // Get the existing admin by ID using Mongoose
-    const existingAdmin = await AdminModel.findOne({ sponsorId: adminId });
+    const existingAdmin = await AdminModel.findOne({ adminId: adminId });
 
     if (!existingAdmin) {
       return res.status(404).json({ message: 'Admin not found' });
@@ -137,10 +137,10 @@ export async function updateAdmin(req, res, next) {
 // Delete admin
 export async function  deleteAdmin(req, res, next){
   try {
-    let adminId = req.params.sponsorId;
+    let adminId = req.params.adminId;
 
     const updatedAdmin = await AdminModel.deleteOne(
-      { sponsorId: adminId },
+      { adminId: adminId },
       { new: true }
     );
 
