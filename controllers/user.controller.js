@@ -238,3 +238,22 @@ export async function deleteUser(req, res, next) {
       .json({ message: "Something went wrong", error: error.message });
   }
 }
+
+// Search/filter users by userName
+export async function searchUsersByUserName(req, res) {
+  try {
+    const userName = req.params.userName;
+
+    // Find users based on the provided userName (case-insensitive)
+    const users = await UserModel.find({ userName: { $regex: new RegExp(userName, "i") } });
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: "No users found with the provided userName" });
+    }
+
+    res.status(200).json({ users });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
+}
+

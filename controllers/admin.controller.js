@@ -150,3 +150,26 @@ export async function  deleteAdmin(req, res, next){
     res.status(500).json({ message: "Something went wrong", error: error.message });
   }
 };
+
+// Count userId associated with an admin
+export async function countUserId(req, res) {
+  try {
+    const adminId = req.params.adminId;
+
+    // Find the admin by adminId
+    const admin = await AdminModel.findOne({ adminId: adminId });
+    console.log("admin--->", admin);
+
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    // Count the number of userId associated with the admin
+    const userIdCount = admin.userId.length;
+    console.log("userIdCount--->", userIdCount);
+
+    res.status(200).json({ userIdCount });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
+}

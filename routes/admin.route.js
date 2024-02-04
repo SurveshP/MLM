@@ -18,4 +18,7 @@ router.put('/:adminId', adminController.updateAdmin);
 /* Delete */
 router.delete('/:adminId', adminController.deleteAdmin);
 
+// Count userId associated with an admin
+router.get('/countUserId/:adminId', adminController.countUserId);
+
 export default router;

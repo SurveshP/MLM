@@ -20,4 +20,7 @@ router.put('/updateUser/:userId', userController.updateUser);
 // Delete user
 router.delete('/deleteUser/:userId', userController.deleteUser);
 
+// Search/filter users by userName
+router.get('/searchUser/:userName', userController.searchUsersByUserName);
+
 export default router;
