@@ -19,4 +19,10 @@ router.put('/:itemId', productController.updateProduct);
 /* Delete */
 router.delete('/:itemId', productController.deleteProduct);
 
+// Search/filter products by categoryId
+router.get('/searchProductsByCategoryId/:categoryId', productController.searchProductsByCategoryId);
+
+// Search/filter products by price range
+router.get('/searchProductsByPriceRange/:minPrice/:maxPrice', productController.searchProductsByPriceRange);
+
 export default router;

@@ -4,7 +4,10 @@ import Joi from "joi";
 export function validateCreateOrder(orderData) {
   const orderSchema = Joi.object({
     userId: Joi.string().required(),
-    productId: Joi.string().required(),
+    product: Joi.array().items(Joi.object({
+      productId: Joi.string().required(),
+      quantity: Joi.number().integer().min(0).default(0).required()
+    })).required(),
     deliveryAddress: Joi.string().required(),
     orderStatus: Joi.string()
   });
