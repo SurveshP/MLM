@@ -5,6 +5,7 @@ const { Schema } = mongoose;
 const categorySchema = Schema({
   categoryName: { type: String },
   description: { type: String },
+  parentCategory: { type: String },
   disabled: { type: Boolean, default: false }
 }, {
   timestamps: true

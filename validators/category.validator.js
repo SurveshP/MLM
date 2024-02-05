@@ -5,6 +5,7 @@ export function validateCreateCategory(categoryData) {
   const categorySchema = Joi.object({
     categoryName: Joi.string().required(),
     description: Joi.string().required(),
+    parentCategory: Joi.string().required(),
   });
 
   const { error } = categorySchema.validate(categoryData);
