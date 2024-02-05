@@ -1,6 +1,5 @@
 import express from 'express';
 import * as categoryController from '../controllers/category.controller.js';
-// const connectionController = require('./connection.controller');
 
 const router = express.Router();
 

@@ -27,6 +27,7 @@ export async function insertProduct(req, res) {
     const newProduct = new ProductModel(productData);
 
     newProduct.itemId = itemId;
+    newProduct.photos = req.files.photos.map(doc => doc.key);
     const savedProduct = await newProduct.save();
 
     // Send Response
