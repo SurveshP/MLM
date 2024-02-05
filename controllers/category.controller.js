@@ -31,7 +31,7 @@ export async function insertCategory(req, res) {
 // Display List
 export async function  ListCategorys(req, res, next){
   try {
-    let category = await CategoryModel.find({ disabled: "false" });
+    let category = await CategoryModel.find({ disabled: "false" }).populate('parentCategory');
     if (!category || category.length === 0) {
       console.log('categoryr not found');
       return res.status(404).json({ message: 'category not found' });
