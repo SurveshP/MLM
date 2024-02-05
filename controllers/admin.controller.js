@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 function generateadminId(count) {
   // Assuming count is a number like 1, 2, 3, ...
   const formattedCount = count.toString().padStart(2, '0');
-  return `ADM-${formattedCount}`;
+  return `ADMIN-${formattedCount}`;
 }
 
 // Insert New admin

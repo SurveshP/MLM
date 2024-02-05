@@ -11,6 +11,7 @@
   "dependencies": {
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
@@ -21,7 +22,7 @@
     "http-errors": "~1.6.3",
     "i": "^0.3.7",
     "joi": "^13.7.0",
-    "jsonwebtoken": "^9.0.1",
+    "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mongoose": "^7.1.1",
     "multer": "^1.4.5-lts.1",
@@ -30,7 +31,7 @@
     "aws-sdk": "^2.1454.0",
     "morgan": "~1.9.1",
     "node": "^21.6.1",
-    "nodemailer": "^6.9.3",
+    "nodemailer": "^6.9.9",
     "validator": "^13.9.0"
   },
   "devDependencies": {
