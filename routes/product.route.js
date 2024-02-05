@@ -1,27 +1,38 @@
-import express from 'express';
-import * as productController from '../controllers/product.controller.js';
+import express from "express";
+import * as productController from "../controllers/product.controller.js";
+import { upload } from "../middlewares/bucket.js";
 
 const router = express.Router();
 
 // add product
-router.post('/', productController.insertProduct);
+router.post(
+  "/",
+  upload.fields([{ name: "photos", maxCount: 10 }]),
+  productController.insertProduct
+);
 
 // all products
-router.get('/', productController.ListProducts);
+router.get("/", productController.ListProducts);
 
 /* show */
-router.get('/:itemId', productController.showProduct);
+router.get("/:itemId", productController.showProduct);
 
 /* update */
-router.put('/:itemId', productController.updateProduct);
+router.put("/:itemId", productController.updateProduct);
 
 /* Delete */
-router.delete('/:itemId', productController.deleteProduct);
+router.delete("/:itemId", productController.deleteProduct);
 
 // Search/filter products by categoryId
-router.get('/searchProductsByCategoryId/:categoryId', productController.searchProductsByCategoryId);
+router.get(
+  "/searchProductsByCategoryId/:categoryId",
+  productController.searchProductsByCategoryId
+);
 
 // Search/filter products by price range
-router.get('/searchProductsByPriceRange/:minPrice/:maxPrice', productController.searchProductsByPriceRange);
+router.get(
+  "/searchProductsByPriceRange/:minPrice/:maxPrice",
+  productController.searchProductsByPriceRange
+);
 
 export default router;

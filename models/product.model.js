@@ -8,6 +8,7 @@ const productSchema = Schema({
   itemId: { type: String },
   description: { type: String },
   price: { type: Number, default: 0 },
+  photos: [],
   quantityInStock: { type: Number, default: 0 },
   disabled: { type: Boolean, default: false },
 }, {
