@@ -1,12 +1,11 @@
 // userValidation.js
-import { log } from 'console';
 import Joi from 'joi';
 
 // Validate the user data
 export function validateCreateUser(userData) {
   const userSchema = Joi.object({
-    adminId: Joi.string().required(),
-    fromuserId: Joi.string(),
+    adminId: Joi.string(),
+    // fromuserId: Joi.string(),
     userName: Joi.string().required(),
     position: Joi.string().valid('Left', 'Right').required(),
     type: Joi.string().required(),

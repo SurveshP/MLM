@@ -3,11 +3,11 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const userSchema = Schema({
-  adminId: { type: String, required: true },
+  adminId: { type: String },
   userId: { type: String },
-  fromuserId: { type: String },
+  // fromuserId: { type: String },
   userName: { type: String },
-  position: { type: String, enum: ['Left', 'Right'] },
+  position: { type: String, enum: ['Left', 'Right', 'Center'] },
   type: { type: String },
   contactNumber: { type: Number },
   location: { type: String },

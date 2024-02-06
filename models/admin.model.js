@@ -8,7 +8,7 @@ const adminSchema = Schema({
   contactNumber: { type: Number, required: true },
   emailAddress: { type: String, required: true, unique: true },
   password: { type: String, required: true },  
-  userId:[ { type: String, ref: "User" }],
+  userId:{ type: String, ref: "User" },
 }, {
   timestamps: true
 });

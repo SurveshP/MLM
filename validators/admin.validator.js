@@ -10,7 +10,6 @@ export function validateCreateAdmin(adminData) {
   });
 
   const { error } = adminSchema.validate(adminData);
-  console.log(error, '45');
   if (error) {
     const errorMessage = error.details.map((detail) => detail.message).join(", ");
     throw new Error(errorMessage);

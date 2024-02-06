@@ -1,29 +1,26 @@
 import UserModel from "../models/user.model.js";
-import AdminModel from "../models/admin.model.js";
 import { validateCreateUser, validateUpdateUser } from '../validators/user.validator.js';
 import bcrypt from "bcrypt";
 
+// Function to generate user IDs
 function generateuserId(count) {
-  // Assuming count is a number like 1, 2, 3, ...
   const formattedCount = count.toString().padStart(2, "0");
   return `USE-${formattedCount}`;
 }
 
-// Create User
 export async function userInsert(req, res) {
   try {
-    const userDate = req.body;
+    const userData = req.body;
 
-
-    // Validate admin data before insertion
-    const { error } = validateCreateUser(userDate);
+    // Validate user data before insertion
+    const { error } = validateCreateUser(userData);
     if (error) {
       return res.status(400).json({ error: error.message });
     }
 
-    // Check if emailAddress already exists
+    // Check if emailAddress already exists in UserModel
     const existingUser = await UserModel.findOne({
-      emailAddress: userDate.emailAddress,
+      emailAddress: userData.emailAddress,
     });
     if (existingUser) {
       return res
@@ -32,57 +29,31 @@ export async function userInsert(req, res) {
     }
 
     // Generate userId
-    const count = (await UserModel.countDocuments()) + 1; // Get the count of existing documents
-    const userId = generateuserId(count);
+    const userCount = (await UserModel.countDocuments()) + 1;
+    const userId = generateuserId(userCount);
 
     // Replace the plain password with the hashed one
-    const saltRounds = 10; // Adjust the number of salt rounds as needed
-    const hashedPassword = await bcrypt.hash(userDate.password, saltRounds);
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
 
     // Insert User with userId
-    const newUser = new UserModel(userDate);
-    newUser.password = hashedPassword;
-    newUser.userId = userId;
+    const newUser = new UserModel({
+      ...userData,
+      userId: userId,
+      password: hashedPassword,
+    });
     const savedUser = await newUser.save();
 
-    // Update Admin with user's userId
-    const adminId = userDate.adminId; // Assuming you pass admin_id in the request body
-    console.log("adminId--->", adminId);
-    if (adminId) {
-      try {
-        // Find the admin by userId
-        const admin = await AdminModel.findOne({ adminId: adminId });
-        console.log("admin--->", admin);
-        if (admin) {
-          // Push user's userId to the admin's userId array
-          admin.userId.push(userId);
-          // Save the admin
-          await admin.save();
-        } else {
-          throw new Error("Admin not found");
-        }
-      } catch (error) {
-        return res.status(500).json({
-          success: false,
-          message: error.message || "Error updating admin with userId",
-        });
-      }
-    }
-
-
-
-
     // Send Response
-    res.status(200).json({ message: "User data inserted", data: savedUser });
+    res.status(200).json({
+      message: "User data inserted",
+      userData: savedUser,
+    });
   } catch (error) {
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: error.message || "Something went wrong",
-      });
+    res.status(500).json({ error: error.message || "Something went wrong" });
   }
 }
+
 
 // User List
 export async function showAllUsers(req, res) {
@@ -118,70 +89,6 @@ export async function showUser(req, res) {
     res
       .status(500)
       .json({ message: "Something went wrong", error: error.message });
-  }
-}
-
-// Display the User of fromuserId and userId
-export async function showUserFromuserId(req, res) {
-  try {
-    const searcheduserId = req.params.userId; // Assuming the parameter is userId
-
-    // Function to recursively find all connected sponsor IDs
-    const findAllConnectedSponsors = async (
-      searchedId,
-      visited = new Set()
-    ) => {
-      visited.add(searchedId);
-
-      // Find connections where the searcheduserId is fromuserId
-      const connections = await UserModel.find({ fromuserId: searchedId });
-
-      if (!connections || connections.length === 0) {
-        return [];
-      }
-
-      let connecteduserIds = connections.map(
-        (connection) => connection.userId
-      );
-
-      // Recursively find all connected sponsor IDs for each connected sponsor ID
-      for (const connecteduserId of connecteduserIds) {
-        if (!visited.has(connecteduserId)) {
-          const nestedConnections = await findAllConnectedSponsors(
-            connecteduserId,
-            visited
-          );
-          connecteduserIds = connecteduserIds.concat(nestedConnections);
-        }
-      }
-
-      return connecteduserIds;
-    };
-
-    // Find all connected sponsor IDs recursively
-    const allConnecteduserIds = await findAllConnectedSponsors(
-      searcheduserId
-    );
-
-    // Retrieve details of the searched sponsor ID
-    const searchedSponsor = await UserModel.findOne({
-      userId: searcheduserId,
-    });
-
-    // Retrieve details of all connected sponsor IDs from the UserModel
-    const allConnectedSponsorDetails = await UserModel.find({
-      userId: { $in: allConnecteduserIds },
-    });
-
-    // Construct response object including the searcheduserId and all connecteduserIds with details
-    const response = {
-      searchedSponsor: searchedSponsor,
-      allConnectedSponsorDetails: allConnectedSponsorDetails,
-    };
-
-    res.status(200).json(response);
-  } catch (error) {
-    res.status(500).json({ error });
   }
 }
 
@@ -239,6 +146,26 @@ export async function deleteUser(req, res, next) {
   }
 }
 
+// Show User Details by Admin ID
+export async function showUserDetailsByAdminId(req, res) {
+  try {
+    const adminId = req.params.adminId;
+
+    // Find all users associated with the provided adminId
+    const users = await UserModel.find({ adminId: adminId });
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: "No users found for the provided adminId" });
+    }
+
+    res.status(200).json({ users });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
+}
+
+
+
 // Search/filter users by userName
 export async function searchUsersByUserName(req, res) {
   try {
@@ -256,4 +183,3 @@ export async function searchUsersByUserName(req, res) {
     res.status(500).json({ message: "Something went wrong", error: error.message });
   }
 }
-
