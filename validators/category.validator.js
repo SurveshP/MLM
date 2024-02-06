@@ -4,7 +4,8 @@ import Joi from "joi";
 export function validateCreateCategory(categoryData) {
   const categorySchema = Joi.object({
     categoryName: Joi.string().required(),
-    description: Joi.string().required(),
+    description: Joi.string(),
+    parentCategory: Joi.string(),
   });
 
   const { error } = categorySchema.validate(categoryData);
