@@ -21,4 +21,9 @@ router.delete('/:adminId', adminController.deleteAdmin);
 // Count userId associated with an admin
 router.get('/countUserId/:adminId', adminController.countUserId);
 
+// all requests
+router.get('/:adminId/withdrawal-requests', adminController.viewWithdrawRequests);
+
+// Route for admin to respond to withdraw request and update user's wallet
+router.post('/:adminId/respond-withdraw-request', adminController.sendWithdrawRequest);
 export default router;

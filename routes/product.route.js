@@ -10,6 +10,7 @@ router.post(
   upload.fields([{ name: "photos", maxCount: 10 }]),
   productController.insertProduct
 );
+// router.post("/", productController.insertProduct);
 
 // all products
 router.get("/", productController.ListProducts);

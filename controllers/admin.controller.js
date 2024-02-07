@@ -1,4 +1,5 @@
 import AdminModel from '../models/admin.model.js';
+import UserModel from '../models/user.model.js';
 import { validateCreateAdmin, validateUpdateAdmin } from '../validators/admin.validator.js';
 import bcrypt from 'bcrypt';
 
@@ -173,3 +174,65 @@ export async function countUserId(req, res) {
     res.status(500).json({ message: "Something went wrong", error: error.message });
   }
 }
+
+export async function viewWithdrawRequests(req, res) {
+  try {
+    const adminId = req.params.adminId;
+
+    const admin = await AdminModel.findOne({ adminId: adminId });
+    if (!admin) {
+      console.error(`Admin with adminId ${adminId} not found`);
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    const withdrawRequests = admin.withdrawRequests;
+    res.status(200).json({ withdrawRequests });
+  } catch (error) {
+    console.error("Error in viewWithdrawRequests:", error);
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
+}
+
+export async function sendWithdrawRequest(req, res) {
+  try {
+    const { userId, amount } = req.body;
+    const adminId = req.params.adminId;
+
+    // Find the user by userId
+    const user = await UserModel.findOne({ userId: userId });
+    if (!user) {
+      console.error(`User with userId ${userId} not found`);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if the user's wallet has enough balance
+    if (user.wallet < amount) {
+      return res.status(400).json({ message: "Insufficient balance in the user's wallet" });
+    }
+
+    // Deduct the withdrawal amount from the user's wallet
+    user.wallet -= amount;
+
+    // Update the user's wallet
+    await user.save();
+
+    const admin = await AdminModel.findOneAndUpdate(
+      { adminId: adminId },
+      { $push: { withdrawRequests: { userId: userId, amount: amount } } },
+      { new: true }
+    );
+
+    if (!admin) {
+      console.error(`Admin with adminId ${adminId} not found`);
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    res.status(200).json({ message: "Withdraw request sent successfully", user });
+  } catch (error) {
+    console.error("Error in sendWithdrawRequest:", error);
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
+}
+
+
+
