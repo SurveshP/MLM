@@ -46,9 +46,9 @@ export async function insertProduct(req, res) {
 // Display List
 export async function  ListProducts(req, res, next){
   try {
-    let product = await ProductModel.find({ disabled: "false" });
+    let product = await ProductModel.find({ disabled: "false" }).populate('categoryId');
     if (!product || product.length === 0) {
-      console.log('productr not found');
+      console.log('product not found');
       return res.status(404).json({ message: 'product not found' });
     }
     res.status(200).json({ message: "success", product });

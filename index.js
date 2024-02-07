@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import path from "path";
+import cors from "cors";
 import adminRouter from "./routes/admin.route.js";
 import { fileURLToPath } from "url";
 import userRouter from "./routes/user.route.js";
@@ -17,6 +18,7 @@ const PORT = 8000 || process.env.PORT;
 
 /*****************MIDDLEWARES*****************/
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
