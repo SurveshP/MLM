@@ -7,8 +7,9 @@ const adminSchema = Schema({
   adminName: { type: String, required: true },
   contactNumber: { type: Number, required: true },
   emailAddress: { type: String, required: true, unique: true },
-  password: { type: String, required: true },  
-  userId:{ type: String, ref: "User" },
+  password: { type: String, required: true },
+  type: { type: String, enum: ['Add', 'WithDrawal'] },  
+  withdrawRequests: [{ userId: String, amount: Number }] 
 }, {
   timestamps: true
 });

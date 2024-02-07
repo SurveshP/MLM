@@ -6,8 +6,9 @@ export function validateCreateUser(userData) {
   const userSchema = Joi.object({
     adminId: Joi.string(),
     // fromuserId: Joi.string(),
+    wallet: Joi.number(),
     userName: Joi.string().required(),
-    position: Joi.string().valid('Left', 'Right').required(),
+    position: Joi.string().valid('Left', 'Center', 'Right').required(),
     type: Joi.string().required(),
     contactNumber: Joi.number(),
     location: Joi.string(),
@@ -39,3 +40,18 @@ export function validateUpdateUser(updateData) {
   }
   return {error};
 }
+
+// Validate the update data for AdminModel
+// export function validateUpdateUserRequest(sendRequest) {
+//   const adminSchema = Joi.object({
+//     type: Joi.string(),
+//     walletAmount: Joi.number()
+//   });
+  
+//   const { error } = adminSchema.validate(sendRequest);
+//   if (error) {
+//     const errorMessage = error.details.map((detail) => detail.message).join(", ");
+//     throw new Error(errorMessage);
+//   }
+//   return { error };
+// }

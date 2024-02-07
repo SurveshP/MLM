@@ -7,6 +7,7 @@ export function validateCreateProduct(productData) {
     itemName: Joi.string().trim().required(),
     description: Joi.string().trim().required(),
     price: Joi.number(),
+    // photos: Joi.string(),
     quantityInStock: Joi.number()
   });
 

@@ -6,7 +6,9 @@ export function validateCreateAdmin(adminData) {
     adminName: Joi.string().required(),
     contactNumber: Joi.number().required(),
     emailAddress: Joi.string().email().required(),
-    password: Joi.string().required()
+    password: Joi.string().required(),
+    walletAmount: Joi.number(),
+    type: Joi.string().valid('Add', 'WithDrawal')
   });
 
   const { error } = adminSchema.validate(adminData);
