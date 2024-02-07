@@ -1,6 +1,8 @@
 import UserModel from "../models/user.model.js";
+import AdminModel from "../models/admin.model.js";
 import { validateCreateUser, validateUpdateUser } from '../validators/user.validator.js';
 import bcrypt from "bcrypt";
+import mongoose from "mongoose";
 
 // Function to generate user IDs
 function generateuserId(count) {
@@ -180,6 +182,35 @@ export async function searchUsersByUserName(req, res) {
 
     res.status(200).json({ users });
   } catch (error) {
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
+}
+
+export async function sendWithdrawRequest(req, res) {
+  try {
+    const { userId, amount } = req.body;
+    const adminId = req.params.adminId;
+
+    const user = await UserModel.findOne({ userId: userId });
+    if (!user) {
+      console.error(`User with userId ${userId} not found`);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const admin = await AdminModel.findOneAndUpdate(
+      { adminId: adminId },
+      { $push: { withdrawRequests: { userId: userId, amount: amount } } },
+      { new: true }
+    );
+
+    if (!admin) {
+      console.error(`Admin with adminId ${adminId} not found`);
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    res.status(200).json({ message: "Withdraw request sent successfully" });
+  } catch (error) {
+    console.error("Error in sendWithdrawRequest:", error);
     res.status(500).json({ message: "Something went wrong", error: error.message });
   }
 }

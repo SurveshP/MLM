@@ -25,6 +25,7 @@ export async function insertProduct(req, res) {
 
     // Insert Product with itemId
     const newProduct = new ProductModel(productData);
+    console.log("newProduct--->", newProduct);
 
     newProduct.itemId = itemId;
     newProduct.photos = req.files.photos.map(doc => doc.key);
