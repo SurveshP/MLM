@@ -3,19 +3,22 @@ import * as planController from '../controllers/plan.controller.js';
 
 const router = express.Router();
 
-// add category
+// add plan
 router.post('/', planController.insertPlan);
 
-// all categorys
-router.get('/', planController.insertPlan);
+// all plans
+router.get('/', planController.ListPlans);
 
-/* show */
-// router.get('/:id', planController.showCategory);
+// all active plans
+router.get('/active', planController.ListActivePlans);
 
-// /* update */
-// router.put('/:id', planController.updateCategory);
+// all inactive plans
+router.get('/inactive', planController.ListInActivePlans);
+
+// all inactive plans
+router.put('/:id', planController.updatePlan);  // Activate Or Deactivate
 
 // /* Delete */
-// router.delete('/:id', planController.deleteCategory);
+router.delete('/:id', planController.deletePlan);
 
 export default router;

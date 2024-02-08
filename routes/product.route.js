@@ -25,6 +25,9 @@ router.put(
   productController.updateProduct
 );
 
+/* Delete Picture */
+router.delete("/:picturePath", productController.deletePictureInProduct);
+
 /* Delete */
 router.delete("/:itemId", productController.deleteProduct);
 

@@ -1,6 +1,5 @@
-import CategoryModel from '../models/category.model.js';
-import PlanModel from '../models/plan.model.js';
-import { validateCreatePlan } from '../validators/plan.validator.js';
+import PlanModel from "../models/plan.model.js";
+import { validateCreatePlan } from "../validators/plan.validator.js";
 
 // Insert New category
 export async function insertPlan(req, res) {
@@ -20,50 +19,102 @@ export async function insertPlan(req, res) {
     // Send Response
     res.status(200).json({ message: "New Plan Created", data: savedPlan });
   } catch (error) {
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: error.message || "Something went wrong",
-      });
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Something went wrong",
+    });
   }
-};
+}
 
 // Display List
-export async function  ListPlans(req, res, next){
+export async function ListPlans(req, res, next) {
   try {
-    let category = await CategoryModel.find({ disabled: "false" }).populate('parentCategory');
-    if (!category || category.length === 0) {
-      console.log('categoryr not found');
-      return res.status(404).json({ message: 'category not found' });
+    let plans = await PlanModel.find();
+    if (!plans || plans.length === 0) {
+      return res.status(404).json({ message: "plans not found" });
     }
-    res.status(200).json({ message: "success", category });
+    res.status(200).json({ message: "success", plans });
   } catch (error) {
     res
       .status(500)
       .json({ message: "Something went wrong", error: error.message });
   }
-};
+}
 
+// Display Active List
+export async function ListActivePlans(req, res) {
+  try {
+    let plans = await PlanModel.find({ active: true });
+    if (!plans || plans.length === 0) {
+      return res.status(404).json({ message: "plans not found" });
+    }
+    res.status(200).json({ message: "success", plans });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
+  }
+}
 
-// Delete category
-export async function  deletePlan(req, res, next){
+// Display InActive List
+export async function ListInActivePlans(req, res) {
+  try {
+    let plans = await PlanModel.find({ active: false });
+    if (!plans || plans.length === 0) {
+      return res.status(404).json({ message: "No In-active plans found" });
+    }
+    res.status(200).json({ message: "success", plans });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
+  }
+}
+
+// Activate or Deactivate plan
+export async function updatePlan(req, res) {
+  try {
+    const id = req.params.id;
+
+    const plan = await PlanModel.findById(id);
+
+    if (!plan) {
+      return res.status(404).json({ success: false, error: "plan not found" });
+    }
+
+    plan.active = !plan.active;
+
+    await plan.save();
+
+    res
+      .status(200)
+      .json({
+        message: `Plan ${plan.active == true ? "activated" : "deactivated"}`,
+      });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
+  }
+}
+
+// Delete Plan
+export async function deletePlan(req, res) {
   try {
     let id = req.params.id;
 
-    const updatedCategory = await CategoryModel.findOneAndUpdate(
-      { _id: id },
-      { disabled: "true" },
-      { new: true }
-    );
+    const plan = await PlanModel.findByIdAndRemove(id);
 
-    if (!updatedCategory) {
-      return res.status(404).json({ message: "Category not found." });
+    if (!plan) {
+      return res.status(404).json({ message: "Plan not found." });
     }
 
-    res.status(200).json({ message: "Category deleted successfully" });
+    res.status(200).json({ message: "Plan deleted successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Something went wrong", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
   }
-};
+}

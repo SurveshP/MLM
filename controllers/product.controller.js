@@ -1,3 +1,4 @@
+import { deleteFileFromObjectStorage } from '../middlewares/bucket.js';
 import ProductModel from '../models/product.model.js';
 import { validateCreateProduct, validateUpdateProduct } from '../validators/product.validator.js';
 
@@ -115,6 +116,22 @@ export async function updateProduct(req, res, next) {
   }
 };
 
+
+// Delete Picture In product
+export async function  deletePictureInProduct(req, res, next){
+  try {
+    let picturePath = req.params.picturePath;
+
+    if (picturePath) {
+      deleteFileFromObjectStorage(picturePath);
+    }
+
+    res.status(200).json({ message: "Product Picture deleted" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
+};
 
 // Delete product
 export async function  deleteProduct(req, res, next){

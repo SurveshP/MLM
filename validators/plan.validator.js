@@ -5,9 +5,9 @@ export function validateCreatePlan(planData) {
   const planSchema = Joi.object({
     typeOfPlan: Joi.string().required(),
     levelIncome: Joi.boolean().required(),
-    levels: Joi.object(),
+    levels: Joi.array(),
     pairIncome: Joi.boolean().required(),
-    pairs: Joi.object(),
+    pairs: Joi.array(),
   });
 
   const { error } = planSchema.validate(planData);
