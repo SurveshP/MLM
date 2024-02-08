@@ -19,7 +19,11 @@ router.get("/", productController.ListProducts);
 router.get("/:itemId", productController.showProduct);
 
 /* update */
-router.put("/:itemId", productController.updateProduct);
+router.put(
+  "/:itemId",
+  upload.fields([{ name: "photos", maxCount: 10 }]),
+  productController.updateProduct
+);
 
 /* Delete */
 router.delete("/:itemId", productController.deleteProduct);

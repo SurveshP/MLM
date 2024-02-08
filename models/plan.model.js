@@ -37,7 +37,7 @@ const planSchema = Schema(
       default: 250,
     },
     pricePerPV: {
-      type: Number, // In Ruppess (Rs)
+      type: Number, // In Rupess (Rs)
       default: 6,
     },
   },

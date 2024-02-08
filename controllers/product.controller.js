@@ -99,6 +99,11 @@ export async function updateProduct(req, res, next) {
     // Update only the fields that are present in the request body
     Object.assign(existingProduct, productDataToUpdate);
 
+    // Update photos if provided in the request
+    if (req.files && req.files.photos) {
+      existingProduct.photos.push(...req.files.photos.map(doc => doc.key));
+    }
+
     // Save the updated product
     const updatedProduct = await existingProduct.save();
 
