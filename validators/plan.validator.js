@@ -3,7 +3,11 @@ import Joi from "joi";
 // Validate the category data
 export function validateCreatePlan(planData) {
   const planSchema = Joi.object({
-    planName: Joi.string().required(),
+    typeOfPlan: Joi.string().required(),
+    levelIncome: Joi.boolean().required(),
+    levels: Joi.array(),
+    pairIncome: Joi.boolean().required(),
+    pairs: Joi.array(),
   });
 
   const { error } = planSchema.validate(planData);

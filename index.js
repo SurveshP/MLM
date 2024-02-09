@@ -11,6 +11,7 @@ import productRouter from "./routes/product.route.js";
 import categoryRouter from "./routes/category.route.js";
 import orderRouter from "./routes/order.route.js";
 import paymentRouter from "./routes/payment.route.js";
+import planRouter from "./routes/plan.route.js";
 import Connection from "./database/db.js";
 
 /********************************************/
@@ -37,6 +38,7 @@ app.use("/product", productRouter);
 app.use("/category", categoryRouter);
 app.use("/order", orderRouter);
 app.use("/payment", paymentRouter);
+app.use("/plan", planRouter);
 
 /*******************ROUTES******************/
 
