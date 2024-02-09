@@ -1,7 +1,5 @@
 import AdminModel from '../models/admin.model.js';
 import UserModel from '../models/user.model.js';
-import WithDrawModel from '../models/withDraw.model.js';
-import TopupModel from '../models/topups.model.js';
 import { validateCreateAdmin, validateUpdateAdmin } from '../validators/admin.validator.js';
 import bcrypt from 'bcrypt';
 

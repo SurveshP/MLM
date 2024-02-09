@@ -1,4 +1,5 @@
 import UserModel from "../models/user.model.js";
+import OrderModel from "../models/order.model.js";
 import WithDrawModel from "../models/withDraw.model.js";
 import { validateCreateUser, validateUpdateUser } from '../validators/user.validator.js';
 import bcrypt from "bcrypt";
@@ -211,6 +212,40 @@ export async function sendWithdrawRequest(req, res) {
     res.status(200).json({ message: "Withdraw request sent successfully" });
   } catch (error) {
     console.error("Error in sendWithdrawRequest:", error);
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
+}
+
+// Order List by User Id
+export async function getOrderListByUserId(req, res) {
+  try {
+    const { userId } = req.params;
+
+    // Find the user by userId
+    const user = await UserModel.findOne({ userId });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Retrieve the orderId(s) associated with the user
+    const orderIds = user.orderId;
+
+    // If there are no orders associated with the user
+    if (!orderIds || orderIds.length === 0) {
+      return res.status(404).json({ message: "No orders found for this user" });
+    }
+
+    // Find the orders using the retrieved orderIds
+    const orders = await OrderModel.find({ orderId: { $in: orderIds } });
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: "No orders found for this user" });
+    }
+
+    // Send the list of orders associated with the user
+    res.status(200).json({ orders });
+  } catch (error) {
     res.status(500).json({ message: "Something went wrong", error: error.message });
   }
 }

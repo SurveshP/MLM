@@ -26,4 +26,7 @@ router.delete('/deleteUser/:userId', userController.deleteUser);
 // Request from user
 router.get('/:adminId/withdraw-requests', userController.sendWithdrawRequest);
 
+// Request from user
+router.get('/:userId/orders', userController.getOrderListByUserId);
+
 export default router;
