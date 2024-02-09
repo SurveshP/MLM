@@ -1,8 +1,7 @@
 import UserModel from "../models/user.model.js";
-import AdminModel from "../models/admin.model.js";
+import WithDrawModel from "../models/withDraw.model.js";
 import { validateCreateUser, validateUpdateUser } from '../validators/user.validator.js';
 import bcrypt from "bcrypt";
-import mongoose from "mongoose";
 
 // Function to generate user IDs
 function generateuserId(count) {
@@ -189,24 +188,25 @@ export async function searchUsersByUserName(req, res) {
 export async function sendWithdrawRequest(req, res) {
   try {
     const { userId, amount } = req.body;
-    const adminId = req.params.adminId;
+    const adminId = req.params.adminId; // Extract adminId from URL
 
+    // Check if user exists
     const user = await UserModel.findOne({ userId: userId });
     if (!user) {
       console.error(`User with userId ${userId} not found`);
       return res.status(404).json({ message: "User not found" });
     }
 
-    const admin = await AdminModel.findOneAndUpdate(
-      { adminId: adminId },
-      { $push: { withdrawRequests: { userId: userId, amount: amount } } },
-      { new: true }
-    );
+    // Create a new withdrawal request
+    const withdrawal = new WithDrawModel({
+      adminId: adminId,
+      userId: userId,
+      amount: amount,
+      requestStatus: 'Pending'
+    });
 
-    if (!admin) {
-      console.error(`Admin with adminId ${adminId} not found`);
-      return res.status(404).json({ message: "Admin not found" });
-    }
+    // Save the withdrawal request to the database
+    await withdrawal.save();
 
     res.status(200).json({ message: "Withdraw request sent successfully" });
   } catch (error) {

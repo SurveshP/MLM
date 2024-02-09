@@ -1,5 +1,7 @@
 import AdminModel from '../models/admin.model.js';
 import UserModel from '../models/user.model.js';
+import WithDrawModel from '../models/withDraw.model.js';
+import TopupModel from '../models/topups.model.js';
 import { validateCreateAdmin, validateUpdateAdmin } from '../validators/admin.validator.js';
 import bcrypt from 'bcrypt';
 
@@ -38,7 +40,7 @@ export async function insertAdmin(req, res) {
     const saltRounds = 10; // Adjust the number of salt rounds as needed
     const hashedPassword = await bcrypt.hash(adminData.password, saltRounds);
 
-    // Insert Admin with adminId
+    // Insert Admin with adminId TopupModel
     const newAdmin = new AdminModel(adminData);
 
     newAdmin.password = hashedPassword;
@@ -152,87 +154,12 @@ export async function  deleteAdmin(req, res, next){
   }
 };
 
-// Count userId associated with an admin
-export async function countUserId(req, res) {
+// Count userId 
+export async function countUsers(req, res) {
   try {
-    const adminId = req.params.adminId;
-
-    // Find the admin by adminId
-    const admin = await AdminModel.findOne({ adminId: adminId });
-    console.log("admin--->", admin);
-
-    if (!admin) {
-      return res.status(404).json({ message: "Admin not found" });
-    }
-
-    // Count the number of userId associated with the admin
-    const userIdCount = admin.userId.length;
-    console.log("userIdCount--->", userIdCount);
-
-    res.status(200).json({ userIdCount });
+    const userCount = await UserModel.countDocuments();
+    res.status(200).json({ count: userCount });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong", error: error.message });
+    res.status(500).json({ error: error.message || "Something went wrong" });
   }
 }
-
-export async function viewWithdrawRequests(req, res) {
-  try {
-    const adminId = req.params.adminId;
-
-    const admin = await AdminModel.findOne({ adminId: adminId });
-    if (!admin) {
-      console.error(`Admin with adminId ${adminId} not found`);
-      return res.status(404).json({ message: "Admin not found" });
-    }
-
-    const withdrawRequests = admin.withdrawRequests;
-    res.status(200).json({ withdrawRequests });
-  } catch (error) {
-    console.error("Error in viewWithdrawRequests:", error);
-    res.status(500).json({ message: "Something went wrong", error: error.message });
-  }
-}
-
-export async function sendWithdrawRequest(req, res) {
-  try {
-    const { userId, amount } = req.body;
-    const adminId = req.params.adminId;
-
-    // Find the user by userId
-    const user = await UserModel.findOne({ userId: userId });
-    if (!user) {
-      console.error(`User with userId ${userId} not found`);
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Check if the user's wallet has enough balance
-    if (user.wallet < amount) {
-      return res.status(400).json({ message: "Insufficient balance in the user's wallet" });
-    }
-
-    // Deduct the withdrawal amount from the user's wallet
-    user.wallet -= amount;
-
-    // Update the user's wallet
-    await user.save();
-
-    const admin = await AdminModel.findOneAndUpdate(
-      { adminId: adminId },
-      { $push: { withdrawRequests: { userId: userId, amount: amount } } },
-      { new: true }
-    );
-
-    if (!admin) {
-      console.error(`Admin with adminId ${adminId} not found`);
-      return res.status(404).json({ message: "Admin not found" });
-    }
-
-    res.status(200).json({ message: "Withdraw request sent successfully", user });
-  } catch (error) {
-    console.error("Error in sendWithdrawRequest:", error);
-    res.status(500).json({ message: "Something went wrong", error: error.message });
-  }
-}
-
-
-

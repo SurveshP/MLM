@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import path from "path";
 import cors from "cors";
 import adminRouter from "./routes/admin.route.js";
+import withDrawRouter from "./routes/withDraw.route.js";
+import topupsRouter from "./routes/topups.route.js";
 import { fileURLToPath } from "url";
 import userRouter from "./routes/user.route.js";
 import productRouter from "./routes/product.route.js";
@@ -28,6 +30,8 @@ app.use("/", express.static(__dirname + "/public"));
 
 /*******************ROUTES******************/
 app.use("/admin", adminRouter);
+app.use("/withDraw", withDrawRouter);
+app.use("/topups", topupsRouter);
 app.use("/user", userRouter);
 app.use("/product", productRouter);
 app.use("/category", categoryRouter);
