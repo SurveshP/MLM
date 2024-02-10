@@ -26,6 +26,13 @@ export function validateCreateAccount(accountData) {
 // Validate the update data
 export function validateUpdateAccount(updateData) {
   const accountSchema = Joi.object({
+    userId: Joi.string(),
+    paymentType: Joi.string(),
+    bankName: Joi.string(),
+    accountNo: Joi.number(),
+    accountHolderName: Joi.string(),
+    accountType: Joi.string(),
+    bankBranch: Joi.string(),
     default: Joi.boolean()
   });
   
