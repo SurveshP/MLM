@@ -19,6 +19,9 @@ router.put('/:id', accountController.updateAccount);
 router.delete('/:id', accountController.deleteAccount);
 
 // Route to get the list of account IDs with userId
-router.get('/accounts/:userId', accountController.listAccountsByUserId);
+router.get('/user/:userId', accountController.listAccountsByUserId);
+
+// Route to get the list of account IDs with userId
+router.put('/user/:id', accountController.updateAccountByUserId);
 
 export default router;

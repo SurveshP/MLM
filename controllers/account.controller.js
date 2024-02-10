@@ -1,5 +1,6 @@
 import AccountModel from '../models/account.model.js';
 import { validateCreateAccount, validateUpdateAccount } from '../validators/account.validator.js';
+import mongoose, { Types } from "mongoose";
 
 // Insert New account
 export async function insertAccount(req, res) {
@@ -135,3 +136,49 @@ export async function listAccountsByUserId(req, res) {
     res.status(500).json({ message: 'Something went wrong', error: error.message });
   }
 }
+
+// Update account default
+export async function updateAccountByUserId(req, res, next) {
+  try {
+    const id = req.params.id;
+    const userId = req.body.userId; // Assuming userId is provided in the request body
+    const defaultFieldValue = req.body.default; // Assuming the new value for the default field is provided in the request body
+
+    // Validate the update data
+    const { error } = validateUpdateAccount({ default: defaultFieldValue });
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    // Update the default field of the specified account by ID
+    const updatedAccount = await AccountModel.findOneAndUpdate(
+      { _id: id },
+      { $set: { default: defaultFieldValue } },
+      { new: true }
+    );
+
+    if (!updatedAccount) {
+      return res.status(404).json({ message: 'Account not found' });
+    }
+
+    // Now update default field to false for all other accounts of the given userId
+    const updateOperations = [
+      {
+        updateMany: {
+          filter: { userId: userId, _id: { $ne: new Types.ObjectId(id) } }, // Use new keyword here
+          update: { $set: { default: false } }
+        }
+      }
+    ];
+
+    // Perform bulk write operation
+    await AccountModel.bulkWrite(updateOperations);
+
+    // Send success response
+    res.status(200).json({ message: 'Default field updated successfully for the specified account and for all other accounts of the same user' });
+  } catch (error) {
+    // Send Error Response
+    console.error(error);
+    res.status(500).json({ message: 'Something went wrong', error: error.message });
+  }
+};
