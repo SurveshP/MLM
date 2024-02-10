@@ -13,6 +13,8 @@ import orderRouter from "./routes/order.route.js";
 import paymentRouter from "./routes/payment.route.js";
 import planRouter from "./routes/plan.route.js";
 import accountRouter from "./routes/account.route.js";
+import supportRouter from "./routes/support.route.js";
+import adminSupportRouter from "./routes/adminSupport.route.js";
 import Connection from "./database/db.js";
 
 /********************************************/
@@ -41,6 +43,8 @@ app.use("/order", orderRouter);
 app.use("/payment", paymentRouter);
 app.use("/plan", planRouter);
 app.use("/account", accountRouter);
+app.use("/support", supportRouter);
+app.use("/adminSupport", adminSupportRouter);
 
 /*******************ROUTES******************/
 

@@ -1,6 +1,5 @@
 import TopupsModel from '../models/topups.model.js';
 import UserModel from '../models/user.model.js';
-import WithDrawModel from '../models/withDraw.model.js';
 
 export async function sendTopupsRequest(req, res) {
   try {
