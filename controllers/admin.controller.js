@@ -45,16 +45,6 @@ export async function insertAdmin(req, res) {
     newAdmin.adminId = adminId;
     const savedAdmin = await newAdmin.save();
 
-    // if (adminData.admin_id) {
-    //   // Create a filter object using the adminId
-    //   const filter = { _id: adminData.admin_id };
-
-    //   // Push the admin's adminId into the adminSponsor_id array of the admin
-    //   await AdminModel.findOneAndUpdate(filter, {
-    //     $push: { adminSponser_id: savedAdmin.adminId },
-    //   });
-    // }
-
     // Send Response
     res.status(200).json({ message: "Admin data inserted", data: savedAdmin });
   } catch (error) {
@@ -68,7 +58,7 @@ export async function insertAdmin(req, res) {
 };
 
 // Display List
-export async function  ListAdmins(req, res, next){
+export async function ListAdmins(req, res, next) {
   try {
     let admin = await AdminModel.find();
     if (!admin || admin.length === 0) {
@@ -84,10 +74,10 @@ export async function  ListAdmins(req, res, next){
 };
 
 // Display Single admin
-export async function  showAdmin(req, res, next){
+export async function showAdmin(req, res, next) {
   try {
     let adminId = req.params.adminId; // Assuming the parameter is adminId
-    let admin = await AdminModel.findOne({adminId: adminId});
+    let admin = await AdminModel.findOne({ adminId: adminId });
 
     if (!admin) {
       console.log('Admin not found');
@@ -136,7 +126,7 @@ export async function updateAdmin(req, res, next) {
 
 
 // Delete admin
-export async function  deleteAdmin(req, res, next){
+export async function deleteAdmin(req, res, next) {
   try {
     let adminId = req.params.adminId;
 

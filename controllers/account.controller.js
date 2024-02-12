@@ -30,7 +30,7 @@ export async function insertAccount(req, res) {
 };
 
 // Display List
-export async function  ListAccounts(req, res, next){
+export async function ListAccounts(req, res, next) {
   try {
     let account = await AccountModel.find();
     if (!account || account.length === 0) {
@@ -46,10 +46,10 @@ export async function  ListAccounts(req, res, next){
 };
 
 // Display Single account
-export async function  showAccount(req, res, next){
+export async function showAccount(req, res, next) {
   try {
     let id = req.params.id; // Assuming the parameter is accountId
-    let account = await AccountModel.findOne({_id: id});
+    let account = await AccountModel.findOne({ _id: id });
 
     if (!account) {
       console.log('Account not found');
@@ -96,9 +96,8 @@ export async function updateAccount(req, res, next) {
   }
 };
 
-
 // Delete account
-export async function  deleteAccount(req, res, next){
+export async function deleteAccount(req, res, next) {
   try {
     let id = req.params.id;
 
