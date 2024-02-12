@@ -1,5 +1,6 @@
 import express from 'express';
 import * as userController from '../controllers/user.controller.js';
+import * as authController from '../controllers/auth.controller.js';
 // import SchemaValidator from "../middlewares/schemaValidator.js";
 // const validateRequest = SchemaValidator(true);
 const router = express.Router();
@@ -28,5 +29,14 @@ router.get('/:adminId/withdraw-requests', userController.sendWithdrawRequest);
 
 // Request from user
 router.get('/:userId/orders', userController.getOrderListByUserId);
+
+// Login user
+router.post('/login', authController.userLogin);
+
+// Logout user
+router.post('/logout', authController.userLogout);
+
+// Forget Password
+// router.post('/forgot-password', authController.forgotPassword);
 
 export default router;

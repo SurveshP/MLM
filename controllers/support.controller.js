@@ -2,36 +2,6 @@ import SupportModel from '../models/support.model.js';
 import AdminSupportModel from "../models/adminSupport.model.js";
 import { nanoid } from 'nanoid';
 
-// Insert New support
-// export async function insertSupport(req, res) {
-//   try {
-//     const supportData = req.body;
-
-//     // Validate support data before insertion
-//     const { error } = validateCreateSupport(supportData);
-//     if (error) {
-//       return res.status(400).json({ error: error.message });
-//     }
-
-//     // Generate ticketToken
-//     const ticketToken = `TK${nanoid(8)}`;
-//     supportData.ticketToken = ticketToken;
-
-//     // Insert Support with ticketToken
-//     const newSupport = new SupportModel(supportData);
-//     const savedSupport = await newSupport.save();
-
-//     // Send Response
-//     res.status(200).json({ message: "Support data inserted", data: savedSupport });
-//   } catch (error) {
-//     return res
-//       .status(500)
-//       .json({
-//         success: false,
-//         message: error.message || "Something went wrong",
-//       });
-//   }
-// };
 export async function insertSupport(req, res) {
   try {
     const { userId, description } = req.body;

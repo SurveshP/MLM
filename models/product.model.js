@@ -9,7 +9,6 @@ const productSchema = Schema({
   description: { type: String },
   price: { type: Number, default: 0 },
   photos: [],
-  // photos: { type: String },
   quantityInStock: { type: Number, default: 0 },
   disabled: { type: Boolean, default: false },
 }, {

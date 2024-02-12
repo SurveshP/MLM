@@ -4,16 +4,12 @@ import SupportModel from '../models/support.model.js'; // Import SupportModel
 export async function viewAdminSupportRequests(req, res) {
   try {
     const adminId = req.params.adminId;
-    console.log("adminId--->", adminId);
 
     const admin = await AdminSupportModel.findOne({ adminId: adminId });
     if (!admin) {
       console.error(`Admin with adminId ${adminId} not found`);
       return res.status(404).json({ message: "Admin not found" });
     }
-
-    console.log("admin--->", admin);
-
     const AdminSupportals = await AdminSupportModel.find({ adminId: adminId });
     res.status(200).json({ AdminSupportals });
   } catch (error) {
