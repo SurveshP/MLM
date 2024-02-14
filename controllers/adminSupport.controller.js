@@ -10,7 +10,6 @@ export async function viewAdminSupportRequests(req, res) {
       console.error(`Admin with adminId ${adminId} not found`);
       return res.status(404).json({ message: "Admin not found" });
     }
-
     const AdminSupportals = await AdminSupportModel.find({ adminId: adminId });
     res.status(200).json({ AdminSupportals });
   } catch (error) {

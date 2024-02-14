@@ -2,7 +2,6 @@ import SupportModel from '../models/support.model.js';
 import AdminSupportModel from "../models/adminSupport.model.js";
 import { nanoid } from 'nanoid';
 
-// Insert New support
 export async function insertSupport(req, res) {
   try {
     const { userId, description } = req.body;
