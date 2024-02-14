@@ -42,4 +42,7 @@ router.post('/forgot-password', authController.forgotPassword);
 // Reset Password
 router.post('/reset-password', authController.resetPassword);
 
+// Change Password
+router.post('/change-password/:userId', authController.changePassword);
+
 export default router;
