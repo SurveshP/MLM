@@ -37,6 +37,9 @@ router.post('/login', authController.userLogin);
 router.post('/logout', authController.userLogout);
 
 // Forget Password
-// router.post('/forgot-password', authController.forgotPassword);
+router.post('/forgot-password', authController.forgotPassword);
+
+// Reset Password
+router.post('/reset-password', authController.resetPassword);
 
 export default router;
