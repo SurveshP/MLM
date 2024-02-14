@@ -143,4 +143,46 @@ export async function resetPassword(req, res) {
     }
 }
 
-
+// Method to change user password
+export async function changePassword(req, res) {
+    try {
+        const { userId } = req.params;
+        const { oldPassword, newPassword } = req.body;
+    
+        // Find the user by userId
+        const user = await UserModel.findOne({ userId });
+    
+        // If user not found
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+    
+        // Compare old password with the hashed password stored in the database
+        const passwordMatch = await bcrypt.compare(oldPassword, user.password);
+    
+        // If old password doesn't match
+        if (!passwordMatch) {
+          return res.status(400).json({ message: "Old password is incorrect" });
+        }
+    
+        // Validate new password (if required)
+        // const { error } = validateUpdatePassword(newPassword);
+        // if (error) {
+        //   return res.status(400).json({ error: error.message });
+        // }
+    
+        // Hash the new password
+        const saltRounds = 10;
+        const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+    
+        // Update user's password
+        user.password = hashedNewPassword;
+        await user.save();
+    
+        // Send success response
+        res.status(200).json({ message: "Password updated successfully" });
+      } catch (error) {
+        // Handle errors
+        res.status(500).json({ message: "Something went wrong", error: error.message });
+      }
+}
