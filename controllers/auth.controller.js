@@ -2,7 +2,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from 'crypto'; // Import the crypto module
 import UserModel from "../models/user.model.js";
+import nodemailer from "nodemailer"; // Import nodemailer for sending emails
 
+// Function to generate a random token
 function generateToken() {
     return crypto.randomBytes(20).toString('hex');
 }
@@ -50,52 +52,95 @@ export async function userLogout(req, res) {
     }
 }
 
-// // Function to send reset password email
-// export async function sendResetEmail(emailAddress, token) {
-//     try {
-//         const mailOptions = {
-//             from: 'your-email@gmail.com',
-//             to: emailAddress,
-//             subject: 'Password Reset',
-//             html: `
-//                 <p>Hello,</p>
-//                 <p>You requested a password reset. Please click the link below to reset your password:</p>
-//                 <a href="http://yourwebsite.com/reset-password?token=${token}">Reset Password</a>
-//                 <p>If you did not request this, please ignore this email.</p>
-//             `
-//         };
+const transporter = nodemailer.createTransport({
+    service: 'suryaumpteen@gmail.com', // e.g., 'gmail'
+    auth: {
+        user: 'suryaumpteen@gmail.com',
+        pass: 'egye onio jxeo rhmt'
+    }
+});
 
-//         await transporter.sendMail(mailOptions);
-//         console.log(`Password reset email sent to ${emailAddress}`);
-//     } catch (error) {
-//         console.error(`Error sending password reset email: ${error}`);
-//         throw new Error('Failed to send password reset email');
-//     }
-// }
+async function sendPasswordResetEmail(user, resetToken) {
+    try {
+        await transporter.sendMail({
+            from: 'suryaumpteen@gmail.com',
+            to: user.emailAddress,
+            subject: 'Password Reset',
+            text: `Hello ${user.userName},\n\nPlease use the following link to reset your password: ${resetToken}`
+        });
+        console.log('Password reset email sent successfully');
+    } catch (error) {
+        console.error('Error sending password reset email:', error);
+        throw new Error('Error sending password reset email');
+    }
+}
 
-// export async function forgotPassword(req, res) {
-//     try {
-//         const { emailAddress } = req.body;
+export async function forgotPassword(req, res) {
+    try {
+        let { emailAddress } = req.body;
+        emailAddress = emailAddress.trim().toLowerCase(); // Trim whitespace and convert to lowercase
+        console.log("emailAddress--->", emailAddress);
 
-//         // Find user by email address
-//         const user = await UserModel.findOne({ emailAddress });
-//         if (!user) {
-//             return res.status(404).json({ error: "User not found" });
-//         }
+        // Find user by email address
+        const user = await UserModel.findOne({ emailAddress });
+        console.log("user--->", user);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
 
-//         // Generate a unique token
-//         const token = generateToken();
+        // Generate a reset token
+        const resetToken = generateToken();
 
-//         // Save the token and expiration timestamp in the database
-//         user.resetPasswordToken = token;
-//         user.resetPasswordExpires = Date.now() + 3600000; // Token expires in 1 hour
-//         await user.save();
+        // Update user with reset token and expiry time
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpires = Date.now() + 3600000; // Token expires in 1 hour
+        await user.save();
 
-//         // Send reset password email
-//         await sendResetEmail(emailAddress, token);
+        // Send password reset email
+        await sendPasswordResetEmail(user, resetToken);
 
-//         res.status(200).json({ message: "Reset password email sent" });
-//     } catch (error) {
-//         res.status(500).json({ error: error.message || "Something went wrong" });
-//     }
-// }
+        // Respond to the client
+        res.status(200).json({ message: "Password reset email sent successfully" });
+    } catch (error) {
+        console.error("Error in forgotPassword:", error);
+        res.status(500).json({ error: error.message || "Something went wrong" });
+    }
+}
+
+// Reset password handler
+export async function resetPassword(req, res) {
+    try {
+        const { resetToken, newPassword } = req.body;
+
+        // Find user by reset token
+        const user = await UserModel.findOne({ resetPasswordToken: resetToken });
+
+        if (!user) {
+            return res.status(404).json({ error: "Invalid or expired reset token" });
+        }
+
+        // Check if the reset token has expired
+        if (user.resetPasswordExpires < Date.now()) {
+            return res.status(401).json({ error: "Reset token has expired" });
+        }
+
+        // Generate a new hashed password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update user's password and clear reset token
+        user.password = hashedPassword;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+
+        // Save the updated user
+        await user.save();
+
+        // Respond to the client
+        res.status(200).json({ message: "Password reset successful" });
+    } catch (error) {
+        console.error("Error in resetPassword:", error);
+        res.status(500).json({ error: error.message || "Something went wrong" });
+    }
+}
+
+

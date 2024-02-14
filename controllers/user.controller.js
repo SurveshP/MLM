@@ -80,6 +80,8 @@ export async function showUser(req, res) {
   try {
     const userId = req.params.userId; // Corrected variable name
     const user = await UserModel.findOne({ userId: userId }); // Corrected field name
+    // const id = req.params.id; // Corrected variable name
+    // const user = await UserModel.find({ _id: id }); // Corrected field name
     console.log(user);
 
     if (!user) {
