@@ -4,6 +4,7 @@ const { Schema } = mongoose;
 
 const accountSchema = Schema({
   userId: { type: String },
+  IFSCCode: { type: String },
   paymentType: { type: String },
   bankName: { type: String },
   accountNo: { type: Number },
