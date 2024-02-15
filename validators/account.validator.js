@@ -5,6 +5,7 @@ import Joi from 'joi';
 export function validateCreateAccount(accountData) {
   const accountSchema = Joi.object({
     userId: Joi.string().required(),
+    IFSCCode: Joi.string().required(),
     paymentType: Joi.string().required(),
     bankName: Joi.string().required(),
     accountNo: Joi.number().required(),
@@ -27,6 +28,7 @@ export function validateCreateAccount(accountData) {
 export function validateUpdateAccount(updateData) {
   const accountSchema = Joi.object({
     userId: Joi.string(),
+    IFSCCode: Joi.string(),
     paymentType: Joi.string(),
     bankName: Joi.string(),
     accountNo: Joi.number(),
