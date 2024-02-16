@@ -191,7 +191,6 @@ export async function searchUsersByUserName(req, res) {
 export async function sendWithdrawRequest(req, res) {
   try {
     const { userId, amount } = req.body;
-    const adminId = req.params.adminId; // Extract adminId from URL
 
     // Check if user exists
     const user = await UserModel.findOne({ userId: userId });
@@ -202,7 +201,6 @@ export async function sendWithdrawRequest(req, res) {
 
     // Create a new withdrawal request
     const withdrawal = new WithDrawModel({
-      adminId: adminId,
       userId: userId,
       amount: amount,
       requestStatus: 'Pending'
